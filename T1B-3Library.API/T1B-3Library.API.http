@@ -1,0 +1,6 @@
+@T1B_3Library.API_HostAddress = http://localhost:5285
+
+GET {{T1B_3Library.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

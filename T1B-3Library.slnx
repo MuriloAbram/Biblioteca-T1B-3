@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="T1B-3Library.API/T1B-3Library.API.csproj" />
+  <Project Path="T1B-3Library.Application/T1B-3Library.Application.csproj" />
+  <Project Path="T1B-3Library.Desktop/T1B-3Library.Desktop.csproj" />
+  <Project Path="T1B-3Library.Domain/T1B-3Library.Domain.csproj" />
+  <Project Path="T1B-3Library.Infrastructure/T1B-3Library.Infrastructure.csproj" />
+</Solution>
