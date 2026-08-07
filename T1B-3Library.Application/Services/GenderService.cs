@@ -25,15 +25,51 @@ namespace T1B_3Library.Application.Services
             return categories.Select(MapToDto);
         }
 
+        public async Task<GenderDto?> GetByIdAsync(int id)
+        {
+            var category = await _genderRepository.GetByIdAsync(id);
+            return category == null ? null : MapToDto(category);
+        }
+
+        public async Task<GenderDto> CreateAsync(CreateGenderDto dto)
+        {
+            var gender = new Gender { Name = dto.Name };
+            await _genderRepository.AddAsync(gender);
+            return MapToDto(gender);
+        }
+
+        public async Task<GenderDto?> UpdateAsync(int id, UpdateGenderDto dto)
+        {
+            var gender = await _genderRepository.GetByIdAsync(id);
+            if (gender == null) return null;
+
+            gender.Name = dto.Name;
+            await _genderRepository.UpdateAsync(gender);
+            return MapToDto(gender);
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var gender = await _genderRepository.GetByIdAsync(id);
+            if (gender == null) return false;
+
+            await _genderRepository.DeleteAsync(id);
+            return true;
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _genderRepository.CountAsync();
+        }
 
 
-        private static GenderDto MapToDto(Gender category)
+        private static GenderDto MapToDto(Gender gender)
         {
             return new GenderDto
             {
-                Id = category.Id,
-                Name = category.Name,
-                GameCount = category.Games?.Count ?? 0
+                Id = gender.Id,
+                Name = gender.Name,
+                BookCount = gender.Books?.Count ?? 0
             };
         }
     }
