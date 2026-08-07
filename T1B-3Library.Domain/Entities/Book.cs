@@ -14,5 +14,6 @@ namespace T1B_3Library.Domain.Entities
         public string Publisher { get; set; } = string.Empty;
         public int YearPublication { get; set; }
         public virtual Gender? Gender { get; set; }
+        public virtual Gender? batata { get; set; }
     }
 }
