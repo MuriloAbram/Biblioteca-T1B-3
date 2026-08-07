@@ -24,8 +24,8 @@ namespace T1B_3Library.Infrastructure.Configurations
 
             // Relacionamento: Book -> Gender (opcional)
             builder.HasOne(b => b.Gender)
-                .WithMany(g => g.Books)
-                .HasForeignKey(b => b.GenderId)
+                .WithMany(g => g.Books)          // <--- usar Books (plural)
+                .HasForeignKey(b => b.GenderId)  // <--- precisa existir em Book
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

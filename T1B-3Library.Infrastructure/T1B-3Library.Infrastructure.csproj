@@ -21,4 +21,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\T1B-3Library.Application\T1B-3Library.Application.csproj" />
+    <ProjectReference Include="..\T1B-3Library.Domain\T1B-3Library.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

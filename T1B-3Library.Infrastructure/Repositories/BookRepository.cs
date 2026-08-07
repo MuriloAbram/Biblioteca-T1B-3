@@ -1,59 +1,80 @@
-﻿using AtelieDaTransformacao.Domain.Entities;
-using AtelieDaTransformacao.Domain.Interfaces;
-using AtelieDaTransformacao.Infrastructure.Context;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using T1B_3Library.Domain.Entities;
+using T1B_3Library.Domain.Interfaces;
+using T1B_3Library.Infrastructure.Context;
 
-namespace AtelieDaTransformacao.Infrastructure.Repositories
+namespace T1B_3Library.Infrastructure.Repositories
 {
-    public class ProductCategoryRepository : IProductCategoryRepository //•	Define a classe que implementa a interface IProductCategoryRepository — fornece operações de persistência para ProductCategory.
+    public class BookRepository : IBookRepository
     {
-        private readonly AtelieDaTransformacaoDbContext _context;//•	Campo somente leitura que guarda a instância do DbContext usada para acesso aos dados.
+        private readonly AppDbContext _context;
 
-        public ProductCategoryRepository(AtelieDaTransformacaoDbContext context) //•	Construtor que recebe o DbContext via injeção de dependência.
+        public BookRepository(AppDbContext context)
         {
-            _context = context;//•	Atribui a instância de DbContext ao campo local para uso nos métodos.
+            _context = context;
         }
 
-        public async Task<IEnumerable<ProductCategory>> GetAllAsync()//•	Assinatura do método assíncrono que retorna todas as categorias de produto.
+        public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            return await _context.ProductCategories //•	Inicia a query sobre o conjunto ProductCategories do contexto.
-                .Include(c => c.Product) //•	Tenta incluir (eager-load) a propriedade de navegação Product para evitar lazy loading. Observação: confirmar se a propriedade do ProductCategory é Product ou Products (plural); se o nome estiver incorreto, o Include falhará em tempo de execução/compilação.
-                .ToListAsync(); //•	Executa a query de forma assíncrona e materializa o resultado em uma lista.
+            return await _context.Books
+                .Include(b => b.Gender)
+                .ToListAsync();
         }
 
-        public async Task<ProductCategory?> GetByIdAsync(int id)//•	Método assíncrono que retorna uma categoria por id ou null se não existir.
+        public async Task<Book?> GetByIdAsync(int id)
         {
-            return await _context.ProductCategories //•	Inicia a query sobre ProductCategories.
-                .Include(c => c.Product) //•	Mesma inclusão de navegação (ver observar nome da propriedade como acima).
-                .FirstOrDefaultAsync(c => c.Id == id);//•	Executa a query e retorna a primeira entidade que corresponde ao id, ou null.
+            return await _context.Books
+                .Include(b => b.Gender)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task AddAsync(ProductCategory category)//•	Método assíncrono para adicionar uma nova categoria ao banco.
+        // Implementação simples para "featured" (ajuste conforme regra de negócio)
+        public async Task<IEnumerable<Book>> GetGetFeaturedAsync()
         {
-            await _context.ProductCategories.AddAsync(category);//•	Adiciona a entidade ao DbSet de forma assíncrona (marca para inserção).
-            await _context.SaveChangesAsync();//• Salva as alterações no banco de dados de forma assíncrona.
+            return await _context.Books
+                .Include(b => b.Gender)
+                .OrderByDescending(b => b.Id)
+                .Take(5)
+                .ToListAsync();
         }
 
-        public async Task UpdateAsync(ProductCategory category)//•	Método assíncrono para atualizar uma categoria existente.
+        public async Task<IEnumerable<Book>> GetByCategoryAsync(int genderId)
         {
-            _context.ProductCategories.Update(category);//•	Marca a entidade como modificada no DbContext.
-            await _context.SaveChangesAsync();//• Salva as alterações no banco de dados de forma assíncrona.
+            return await _context.Books
+                .Include(b => b.Gender)
+                .Where(b => b.GenderId == genderId)
+                .ToListAsync();
         }
 
-        public async Task DeleteAsync(int id)//•	Método assíncrono para remover uma categoria por id.
+        public async Task AddAsync(Book book)
         {
-            var category = await _context.ProductCategories.FindAsync(id);//•	Procura a entidade pelo id usando FindAsync (busca por chave primária, pode usar cache do contexto).
+            await _context.Books.AddAsync(Book);
+            await _context.SaveChangesAsync();
+        }
 
-            if (category != null)//•	Verifica se a entidade foi encontrada antes de tentar remover.
+        public async Task UpdateAsync(Book Book)
+        {
+            _context.Books.Update(Book);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book != null)
             {
-                _context.ProductCategories.Remove(category);//•	Marca a entidade para remoção.
-                await _context.SaveChangesAsync();//• Salva as alterações no banco de dados de forma assíncrona.
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<int> CountAsync()//•	Método assíncrono que retorna a contagem de categorias armazenadas.
+        public async Task<int> CountAsync()
         {
-            return await _context.ProductCategories.CountAsync();//•	Executa a contagem de registros no banco de forma assíncrona e retorna o resultado.
+            return await _context.Books.CountAsync();
         }
     }
 }
+.

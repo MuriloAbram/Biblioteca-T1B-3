@@ -38,7 +38,6 @@
         public string CoverImageUrl { get; set; } = string.Empty;
         public int CategoryId { get; set; }
         public bool IsFeatured { get; set; }
-        public bool batata { get; set; }
     }
 
 
