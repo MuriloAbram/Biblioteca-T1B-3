@@ -1,45 +1,25 @@
-﻿namespace SenacGames.Desktop.DTOs
+﻿using System; // Importa tipos básicos como Guid
+
+namespace T1B_3Library.Desktop.DTOs
 {
-    public class BookResponseDto
-    {
-        public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int RealeaseYear { get; set; }
-        public string CoverImageUrl { get; set; } = string.Empty;
-        public int CategoryId { get; set; }
-        /// <summary>
-        /// Nome da categoria do jogo, retornado pela API para exibição no DataGridView
-        /// </summary>
-        public string CategoryName { get; set; } = string.Empty;
-        public bool IsFeatured { get; set; }
-        public DateTime CreatedAt { get; set; }
-    }
+    // DTO contendo a representação completa do Livro retornada/exibida pela API
+    public record BookDto(
+        Guid Id,            // Identificador único (chave primária) do livro
+        string Title,       // Título do livro
+        string Author,      // Nome do autor do livro
+        string Status       // Estado atual (ex: Disponível, Emprestado, Indisponível)
+    );
 
-    public class CreateBookDto
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int RealeaseYear { get; set; }
-        public string CoverImageUrl { get; set; } = string.Empty;
-        public int CategoryId { get; set; }
-        public bool IsFeatured { get; set; }
-    }
+    // DTO contendo apenas os dados necessários para cadastrar um novo livro
+    public record CreateBookDto(
+        string Title,       // Título do livro a ser criado
+        string Author      // Nome do autor
+    );
 
-    /// <summary>
-    /// DTO para atualizar um jogo existente.
-    /// Enviado no corpo do PUT /api/games/{id}
-    /// </summary>
-    public class UpdateBookDto
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int RealeaseYear { get; set; }
-        public string CoverImageUrl { get; set; } = string.Empty;
-        public int CategoryId { get; set; }
-        public bool IsFeatured { get; set; }
-    }
-
-
-
+    // DTO contendo os dados permitidos para atualizar um livro existente
+    public record UpdateBookDto(
+        string Title,       // Novo título
+        string Author,      // Novo autor
+        string Status       // Novo status do livro
+    );
 }
