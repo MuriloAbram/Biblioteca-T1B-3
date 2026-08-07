@@ -36,7 +36,60 @@ namespace T1B_3Library.Application.Services
             return books.Select(MapToDto);
         }
 
+        public async Task<IEnumerable<BookDto>> GetByGenderAsync(int genderId)
+        {
+            var books = await _bookRepository.GetByGenderAsync(genderId);
+            return books.Select(MapToDto);
+        }
 
+        public async Task<BookDto> CreateAsync(CreateBookDto dto)
+        {
+            var book = new Book
+            {
+                Title = dto.Title,
+                Author = dto.Author,
+                Publisher = dto.Publisher,
+                YearPublication = dto.YearPublication,
+                GenderId = dto.GenderId,
+                IsFeatured = dto.IsFeatured,
+                CreatedAt = DateTime.Now
+            };
+
+            await _bookRepository.AddAsync(book);
+
+            return MapToDto(book);
+        }
+
+        public async Task<BookDto?> UpdateAsync(int id, UpdateBookDto dto)
+        {
+            var book = await _bookRepository.GetByIdAsync(id);
+            if (book == null) 
+                return null;
+
+            book.Title = dto.Title;
+            book.Author = dto.Author;
+            book.Publisher = dto.Publisher;
+            book.YearPublication = dto.YearPublication;
+            book.GenderId = dto.GenderId;
+            book.IsFeatured = dto.IsFeatured;
+
+            await _bookRepository.UpdateAsync(book);
+            return MapToDto(book);
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var game = await _bookRepository.GetByIdAsync(id);
+            if (game == null) return false;
+
+            await _bookRepository.DeleteAsync(id);
+            return true;
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _bookRepository.CountAsync();
+        }
 
         private static BookDto MapToDto(Book book)
         {

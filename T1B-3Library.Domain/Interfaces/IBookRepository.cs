@@ -11,8 +11,8 @@ namespace T1B_3Library.Domain.Interfaces
     {
         Task<IEnumerable<Book>> GetAllAsync();
         Task<Book?> GetByIdAsync(int id);
-        Task<IEnumerable<Book>> GetGetFeaturedAsync();
-        Task<IEnumerable<Book>> GetByCategoryAsync(int genderId);
+        Task<IEnumerable<Book>> GetFeaturedAsync();
+        Task<IEnumerable<Book>> GetByGenderAsync(int genderId);
         Task AddAsync(Book book);
         Task UpdateAsync(Book book);
         Task DeleteAsync(int id);

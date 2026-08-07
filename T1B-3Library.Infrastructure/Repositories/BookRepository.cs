@@ -32,7 +32,7 @@ namespace T1B_3Library.Infrastructure.Repositories
         }
 
         // Implementação simples para "featured" (ajuste conforme regra de negócio)
-        public async Task<IEnumerable<Book>> GetGetFeaturedAsync()
+        public async Task<IEnumerable<Book>> GetFeaturedAsync()
         {
             return await _context.Books
                 .Include(b => b.Gender)
@@ -41,7 +41,7 @@ namespace T1B_3Library.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Book>> GetByCategoryAsync(int genderId)
+        public async Task<IEnumerable<Book>> GetByGenderAsync(int genderId)
         {
             return await _context.Books
                 .Include(b => b.Gender)
@@ -77,4 +77,3 @@ namespace T1B_3Library.Infrastructure.Repositories
         }
     }
 }
-.
