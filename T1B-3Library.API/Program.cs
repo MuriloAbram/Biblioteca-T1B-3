@@ -103,9 +103,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = "SenacGames API",
+        Title = "T1B-3Library API",
         Version = "v1",
-        Description = "API REST do sistema SenacGames — Catálogo de Games para ensino de ASP.NET Core"
+        Description = "API REST do sistema SenacGames — Catálogo de livros para ensino de ASP.NET Core"
     });
 });
 

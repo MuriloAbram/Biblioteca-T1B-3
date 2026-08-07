@@ -15,7 +15,7 @@ namespace T1B_3Library.Infrastructure.Identity
 
             const string adminRole = "Admin";
             const string adminEmail = "admin@localhost";
-            const string adminPassword = "Admin@123"; // altere para senha segura
+            const string adminPassword = "Admin@123";
 
             // Cria role Admin se não existir
             if (!await roleManager.RoleExistsAsync(adminRole))
