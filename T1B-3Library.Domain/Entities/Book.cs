@@ -13,6 +13,9 @@ namespace T1B_3Library.Domain.Entities
         public string Author { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
         public int YearPublication { get; set; }
+        public int GenderId { get; set; }
+        public bool IsFeatured { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public virtual Gender? Gender { get; set; }
     }
 }

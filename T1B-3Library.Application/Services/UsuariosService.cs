@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace T1B_3Library.Application.Services
 {
-    internal class AuthService
+    internal class UsuariosService
     {
     }
 }

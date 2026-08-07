@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace T1B_3Library.Application.Interfaces
+namespace T1B_3Library.Application.Services
 {
-    internal class IAuthService
+    internal class GenderService
     {
     }
 }
