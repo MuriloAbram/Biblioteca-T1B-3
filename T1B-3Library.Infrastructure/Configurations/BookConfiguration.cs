@@ -8,25 +8,47 @@ namespace T1B_3Library.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Book> builder)
         {
+            // Nome da tabela
             builder.ToTable("Books");
 
+            // Chave primária
             builder.HasKey(b => b.Id);
 
+            // Título
             builder.Property(b => b.Title)
                 .IsRequired()
                 .HasMaxLength(200);
 
-            builder.Property(b => b.Description)
-                .HasMaxLength(2000);
+            // Autor
+            builder.Property(b => b.Author)
+                .IsRequired()
+                .HasMaxLength(200);
 
+            // Editora
             builder.Property(b => b.Publisher)
                 .HasMaxLength(100);
 
-            // Relacionamento: Book -> Gender (opcional)
+            // Ano de publicação
+            builder.Property(b => b.YearPublication)
+                .IsRequired();
+
+            // Categoria/Gênero
+            builder.Property(b => b.GenderId)
+                .IsRequired();
+
+            // Livro em destaque
+            builder.Property(b => b.IsFeatured)
+                .IsRequired();
+
+            // Data de criação
+            builder.Property(b => b.CreatedAt)
+                .IsRequired();
+
+            // Relacionamento Book -> Gender
             builder.HasOne(b => b.Gender)
-                .WithMany(g => g.Books)          // <--- usar Books (plural)
-                .HasForeignKey(b => b.GenderId)  // <--- precisa existir em Book
-                .OnDelete(DeleteBehavior.SetNull);
+                .WithMany(g => g.Books)
+                .HasForeignKey(b => b.GenderId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
