@@ -51,7 +51,7 @@ namespace T1B_3Library.Infrastructure.Repositories
 
         public async Task AddAsync(Book book)
         {
-            await _context.Books.AddAsync(Book);
+            await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
         }
 
