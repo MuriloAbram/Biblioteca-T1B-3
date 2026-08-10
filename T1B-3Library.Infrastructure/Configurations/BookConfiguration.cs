@@ -7,10 +7,7 @@ namespace T1B_3Library.Infrastructure.Configurations
     public class BookConfiguration : IEntityTypeConfiguration<Book>
     {
         public void Configure(EntityTypeBuilder<Book> builder)
-        {
-            // Nome da tabela
-            builder.ToTable("Books");
-
+        { 
             // Chave primária
             builder.HasKey(b => b.Id);
 

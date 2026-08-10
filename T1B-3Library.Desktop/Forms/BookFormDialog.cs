@@ -30,7 +30,6 @@ namespace T1B_3Library.Desktop.Forms
 
             txtTitle.Text = title;
             txtAuthor.Text = author;
-            txtIsbn.Text = isbn;
             cmbCategory.SelectedItem = category;
             txtYear.Text = year.ToString();
             txtQuantity.Text = quantity.ToString();
@@ -65,7 +64,6 @@ namespace T1B_3Library.Desktop.Forms
 
             BookTitle = txtTitle.Text.Trim();
             Author = txtAuthor.Text.Trim();
-            Isbn = txtIsbn.Text.Trim();
             Category = cmbCategory.SelectedItem?.ToString() ?? "";
             Year = int.Parse(txtYear.Text.Trim());
             Quantity = int.Parse(txtQuantity.Text.Trim());
