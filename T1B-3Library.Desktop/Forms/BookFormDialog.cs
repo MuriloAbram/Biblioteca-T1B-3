@@ -125,8 +125,11 @@ namespace T1B_3Library.Desktop.Forms
 
             // Coloca o autor recebido no campo de texto.
             txtAuthor.Text = author;
+<<<<<<< HEAD
+=======
 
             // Seleciona no ComboBox a categoria recebida.
+>>>>>>> 5018a15be25546009e535cafd384ce4b27bf4ba7
             cmbCategory.SelectedItem = category;
 
             // Converte o número do ano para texto
@@ -249,6 +252,8 @@ namespace T1B_3Library.Desktop.Forms
 
             // Obtém o nome do autor e remove espaços extras.
             Author = txtAuthor.Text.Trim();
+<<<<<<< HEAD
+=======
 
             // Obtém a categoria selecionada no ComboBox.
             //
@@ -261,6 +266,7 @@ namespace T1B_3Library.Desktop.Forms
             //
             // "?? """ significa:
             // se o resultado for null, utilize uma string vazia.
+>>>>>>> 5018a15be25546009e535cafd384ce4b27bf4ba7
             Category = cmbCategory.SelectedItem?.ToString() ?? "";
 
 
