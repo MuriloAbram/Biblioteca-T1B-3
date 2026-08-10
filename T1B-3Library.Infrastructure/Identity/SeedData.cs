@@ -17,7 +17,7 @@ namespace T1B_3Library.Infrastructure.Identity
 
             await context.Database.MigrateAsync();
 
-            const string adminEmail = "admin@t1b3library";
+            const string adminEmail = "admin@t1b3library.com";
 
             // Cria role Admin se não existir
             if (!await roleManager.RoleExistsAsync("Admin"))
