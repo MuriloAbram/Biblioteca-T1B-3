@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges1 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges2 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges19 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges7 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
@@ -47,13 +47,12 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             pnlBrand = new Guna.UI2.WinForms.Guna2Panel();
-            picLogo = new Guna.UI2.WinForms.Guna2PictureBox();
+            pictureBox1 = new PictureBox();
             lblAppName = new Label();
             lblSlogan = new Label();
             pnlContent = new Guna.UI2.WinForms.Guna2Panel();
+            lblCred = new Label();
             btnClose = new Guna.UI2.WinForms.Guna2ControlBox();
             btnMinimize = new Guna.UI2.WinForms.Guna2ControlBox();
             lblTitle = new Label();
@@ -68,35 +67,33 @@
             shadowForm = new Guna.UI2.WinForms.Guna2ShadowForm(components);
             borderForm = new Guna.UI2.WinForms.Guna2BorderlessForm(components);
             pnlBrand.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             pnlContent.SuspendLayout();
             SuspendLayout();
             // 
             // pnlBrand
             // 
-            pnlBrand.Controls.Add(picLogo);
+            pnlBrand.Controls.Add(pictureBox1);
             pnlBrand.Controls.Add(lblAppName);
             pnlBrand.Controls.Add(lblSlogan);
-            pnlBrand.CustomizableEdges = customizableEdges3;
+            pnlBrand.CustomizableEdges = customizableEdges1;
             pnlBrand.Dock = DockStyle.Left;
             pnlBrand.FillColor = Color.FromArgb(30, 30, 49);
             pnlBrand.Location = new Point(0, 0);
             pnlBrand.Name = "pnlBrand";
-            pnlBrand.ShadowDecoration.CustomizableEdges = customizableEdges4;
+            pnlBrand.ShadowDecoration.CustomizableEdges = customizableEdges2;
             pnlBrand.Size = new Size(320, 450);
             pnlBrand.TabIndex = 0;
             // 
-            // picLogo
+            // pictureBox1
             // 
-            picLogo.CustomizableEdges = customizableEdges1;
-            picLogo.ImageRotate = 0F;
-            picLogo.Location = new Point(100, 80);
-            picLogo.Name = "picLogo";
-            picLogo.ShadowDecoration.CustomizableEdges = customizableEdges2;
-            picLogo.Size = new Size(120, 120);
-            picLogo.SizeMode = PictureBoxSizeMode.Zoom;
-            picLogo.TabIndex = 0;
-            picLogo.TabStop = false;
+            pictureBox1.Image = Properties.Resources.Imagem_gerada__Livro_digital_com_circuitos_e_pixels;
+            pictureBox1.Location = new Point(100, 80);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(120, 120);
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.TabIndex = 3;
+            pictureBox1.TabStop = false;
             // 
             // lblAppName
             // 
@@ -124,6 +121,7 @@
             // 
             // pnlContent
             // 
+            pnlContent.Controls.Add(lblCred);
             pnlContent.Controls.Add(btnClose);
             pnlContent.Controls.Add(btnMinimize);
             pnlContent.Controls.Add(lblTitle);
@@ -134,23 +132,34 @@
             pnlContent.Controls.Add(btnSubmit);
             pnlContent.Controls.Add(btnToggleMode);
             pnlContent.Controls.Add(lblStatus);
-            pnlContent.CustomizableEdges = customizableEdges19;
+            pnlContent.CustomizableEdges = customizableEdges17;
             pnlContent.Dock = DockStyle.Fill;
             pnlContent.Location = new Point(320, 0);
             pnlContent.Name = "pnlContent";
-            pnlContent.ShadowDecoration.CustomizableEdges = customizableEdges20;
+            pnlContent.ShadowDecoration.CustomizableEdges = customizableEdges18;
             pnlContent.Size = new Size(480, 450);
             pnlContent.TabIndex = 1;
+            // 
+            // lblCred
+            // 
+            lblCred.AutoSize = true;
+            lblCred.BackColor = Color.Transparent;
+            lblCred.ForeColor = Color.Silver;
+            lblCred.Location = new Point(40, 80);
+            lblCred.Name = "lblCred";
+            lblCred.Size = new Size(190, 15);
+            lblCred.TabIndex = 8;
+            lblCred.Text = "Insira suas credenciais para acessar";
             // 
             // btnClose
             // 
             btnClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnClose.CustomizableEdges = customizableEdges5;
+            btnClose.CustomizableEdges = customizableEdges3;
             btnClose.FillColor = Color.Transparent;
             btnClose.IconColor = Color.Gray;
             btnClose.Location = new Point(435, 10);
             btnClose.Name = "btnClose";
-            btnClose.ShadowDecoration.CustomizableEdges = customizableEdges6;
+            btnClose.ShadowDecoration.CustomizableEdges = customizableEdges4;
             btnClose.Size = new Size(35, 30);
             btnClose.TabIndex = 0;
             // 
@@ -158,12 +167,12 @@
             // 
             btnMinimize.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnMinimize.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox;
-            btnMinimize.CustomizableEdges = customizableEdges7;
+            btnMinimize.CustomizableEdges = customizableEdges5;
             btnMinimize.FillColor = Color.Transparent;
             btnMinimize.IconColor = Color.Gray;
             btnMinimize.Location = new Point(395, 10);
             btnMinimize.Name = "btnMinimize";
-            btnMinimize.ShadowDecoration.CustomizableEdges = customizableEdges8;
+            btnMinimize.ShadowDecoration.CustomizableEdges = customizableEdges6;
             btnMinimize.Size = new Size(35, 30);
             btnMinimize.TabIndex = 1;
             // 
@@ -182,15 +191,15 @@
             // 
             txtUsername.BorderRadius = 8;
             txtUsername.Cursor = Cursors.IBeam;
-            txtUsername.CustomizableEdges = customizableEdges9;
+            txtUsername.CustomizableEdges = customizableEdges7;
             txtUsername.DefaultText = "";
             txtUsername.Font = new Font("Segoe UI", 9.75F);
             txtUsername.HoverState.BorderColor = Color.FromArgb(94, 23, 235);
             txtUsername.Location = new Point(40, 105);
             txtUsername.Name = "txtUsername";
-            txtUsername.PlaceholderText = "Nome de Usuário";
+            txtUsername.PlaceholderText = "👨‍💼 User E-mail";
             txtUsername.SelectedText = "";
-            txtUsername.ShadowDecoration.CustomizableEdges = customizableEdges10;
+            txtUsername.ShadowDecoration.CustomizableEdges = customizableEdges8;
             txtUsername.Size = new Size(400, 42);
             txtUsername.TabIndex = 2;
             // 
@@ -198,16 +207,16 @@
             // 
             txtPassword.BorderRadius = 8;
             txtPassword.Cursor = Cursors.IBeam;
-            txtPassword.CustomizableEdges = customizableEdges11;
+            txtPassword.CustomizableEdges = customizableEdges9;
             txtPassword.DefaultText = "";
             txtPassword.Font = new Font("Segoe UI", 9.75F);
             txtPassword.HoverState.BorderColor = Color.FromArgb(94, 23, 235);
             txtPassword.Location = new Point(40, 160);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '●';
-            txtPassword.PlaceholderText = "Sua Senha";
+            txtPassword.PlaceholderText = "🔒 Password";
             txtPassword.SelectedText = "";
-            txtPassword.ShadowDecoration.CustomizableEdges = customizableEdges12;
+            txtPassword.ShadowDecoration.CustomizableEdges = customizableEdges10;
             txtPassword.Size = new Size(400, 42);
             txtPassword.TabIndex = 3;
             // 
@@ -227,7 +236,7 @@
             // 
             cmbRole.BackColor = Color.Transparent;
             cmbRole.BorderRadius = 8;
-            cmbRole.CustomizableEdges = customizableEdges13;
+            cmbRole.CustomizableEdges = customizableEdges11;
             cmbRole.DrawMode = DrawMode.OwnerDrawFixed;
             cmbRole.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbRole.FocusedColor = Color.Empty;
@@ -237,7 +246,7 @@
             cmbRole.Items.AddRange(new object[] { "Reader", "Admin", "Operator" });
             cmbRole.Location = new Point(40, 235);
             cmbRole.Name = "cmbRole";
-            cmbRole.ShadowDecoration.CustomizableEdges = customizableEdges14;
+            cmbRole.ShadowDecoration.CustomizableEdges = customizableEdges12;
             cmbRole.Size = new Size(400, 36);
             cmbRole.StartIndex = 0;
             cmbRole.TabIndex = 4;
@@ -246,12 +255,12 @@
             // btnSubmit
             // 
             btnSubmit.BorderRadius = 8;
-            btnSubmit.CustomizableEdges = customizableEdges15;
+            btnSubmit.CustomizableEdges = customizableEdges13;
             btnSubmit.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnSubmit.ForeColor = Color.White;
             btnSubmit.Location = new Point(40, 290);
             btnSubmit.Name = "btnSubmit";
-            btnSubmit.ShadowDecoration.CustomizableEdges = customizableEdges16;
+            btnSubmit.ShadowDecoration.CustomizableEdges = customizableEdges14;
             btnSubmit.Size = new Size(400, 45);
             btnSubmit.TabIndex = 5;
             btnSubmit.Text = "Entrar";
@@ -260,13 +269,13 @@
             // btnToggleMode
             // 
             btnToggleMode.BackColor = Color.Transparent;
-            btnToggleMode.CustomizableEdges = customizableEdges17;
+            btnToggleMode.CustomizableEdges = customizableEdges15;
             btnToggleMode.FillColor = Color.Transparent;
             btnToggleMode.Font = new Font("Segoe UI", 9F, FontStyle.Underline);
             btnToggleMode.ForeColor = Color.FromArgb(94, 23, 235);
             btnToggleMode.Location = new Point(40, 345);
             btnToggleMode.Name = "btnToggleMode";
-            btnToggleMode.ShadowDecoration.CustomizableEdges = customizableEdges18;
+            btnToggleMode.ShadowDecoration.CustomizableEdges = customizableEdges16;
             btnToggleMode.Size = new Size(400, 30);
             btnToggleMode.TabIndex = 6;
             btnToggleMode.Text = "Não tem uma conta? Cadastre-se";
@@ -305,15 +314,15 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Login - T1B3 Library";
             pnlBrand.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             pnlContent.ResumeLayout(false);
+            pnlContent.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
         private Guna.UI2.WinForms.Guna2Panel pnlBrand;
-        private Guna.UI2.WinForms.Guna2PictureBox picLogo;
         private System.Windows.Forms.Label lblAppName;
         private System.Windows.Forms.Label lblSlogan;
         private Guna.UI2.WinForms.Guna2Panel pnlContent;
@@ -330,5 +339,7 @@
         private Guna.UI2.WinForms.Guna2DragControl dragControl;
         private Guna.UI2.WinForms.Guna2ShadowForm shadowForm;
         private Guna.UI2.WinForms.Guna2BorderlessForm borderForm;
+        private PictureBox pictureBox1;
+        private Label lblCred;
     }
 }

@@ -1,175 +1,133 @@
-﻿using System; // Recursos básicos do C#
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using T1B_3Library.Desktop.DTOs;
+using T1B_3Library.Desktop.Helpers;
+using T1B_3Library.Desktop.Services;
+using T1B_3Library.Desktop.Themes;
 
-using System.Drawing; // Trabalha com cores e elementos gráficos
-
-using System.Windows.Forms; // Recursos do Windows Forms
-
-using T1B_3Library.Desktop.DTOs; // Importa os DTOs usados no Login
-
-using T1B_3Library.Desktop.Helpers; // Importa os Helpers da aplicação
-
-using T1B_3Library.Desktop.Services; // Importa os serviços da aplicação
-
-using T1B_3Library.Desktop.Themes; // Importa o sistema de temas
-
-
-namespace T1B_3Library.Desktop.Forms // Define o namespace dos formulários
+namespace T1B_3Library.Desktop.Forms
 {
-    public partial class LoginForm : Form // Cria o formulário de Login
+    public partial class LoginForm : Form
     {
-        private readonly AuthApiService _authApiService; // Serviço responsável pela autenticação
+        private readonly AuthApiService _authApiService;
+        private bool _isRegisterMode = false;
 
-        private bool _isRegisterMode = false; // Define se está no modo cadastro
-
-
-        public LoginForm() // Construtor do formulário
+        public LoginForm()
         {
-            InitializeComponent(); // Inicializa os componentes da tela
-
-            _authApiService = new AuthApiService(new HttpClientHelper()); // Cria o serviço de autenticação
-
-            ApplyTheme(); // Aplica o tema visual
-
-            UpdateModeUI(); // Atualiza a interface inicial
+            InitializeComponent();
+            _authApiService = new AuthApiService(new HttpClientHelper());
+            ApplyTheme();
+            UpdateModeUI();
         }
 
-
-        private void ApplyTheme() // Aplica as configurações de aparência
+        private void ApplyTheme()
         {
-            pnlBrand.FillColor = LibraryTheme.SecondaryColor; // Define a cor do painel de marca
+            pnlBrand.FillColor = LibraryTheme.SecondaryColor;
+            pnlContent.FillColor = LibraryTheme.BackgroundColor;
 
-            pnlContent.FillColor = LibraryTheme.BackgroundColor; // Define a cor do painel principal
-
-            LibraryTheme.ApplyPrimaryStyle(btnSubmit); // Aplica o estilo principal ao botão
+            LibraryTheme.ApplyPrimaryStyle(btnSubmit);
         }
 
-
-        private void UpdateModeUI() // Atualiza a tela conforme o modo atual
+        private void UpdateModeUI()
         {
-            lblStatus.Text = string.Empty; // Limpa a mensagem de status
+            lblStatus.Text = string.Empty;
 
-            if (_isRegisterMode) // Verifica se está no modo cadastro
+            if (_isRegisterMode)
             {
-                lblTitle.Text = "Criar Nova Conta"; // Define o título do cadastro
+                lblTitle.Text = "Criar Nova Conta";
+                btnSubmit.Text = "Registar";
+                btnToggleMode.Text = "Já tem uma conta? Faça Login";
 
-                btnSubmit.Text = "Registar"; // Altera o texto do botão
+                cmbRole.Visible = true;
+                lblRole.Visible = true;
 
-                btnToggleMode.Text = "Já tem uma conta? Faça Login"; // Texto para voltar ao Login
-
-                cmbRole.Visible = true; // Mostra o campo de perfil
-
-                lblRole.Visible = true; // Mostra o texto do perfil
-
-                btnSubmit.Location = new Point(40, 290); // Define a posição do botão
-
-                btnToggleMode.Location = new Point(40, 345); // Define a posição do botão de alternância
+                btnSubmit.Location = new Point(40, 290);
+                btnToggleMode.Location = new Point(40, 345);
             }
-            else // Executa quando está no modo Login
+            else
             {
-                lblTitle.Text = "Bem-vindo de volta!"; // Define o título do Login
+                lblTitle.Text = "Bem-vindo de volta!";
+                btnSubmit.Text = "Entrar";
+                btnToggleMode.Text = "Não tem uma conta? Cadastre-se";
 
-                btnSubmit.Text = "Entrar"; // Define o texto do botão
+                cmbRole.Visible = false;
+                lblRole.Visible = false;
 
-                btnToggleMode.Text = "Não tem uma conta? Cadastre-se"; // Texto para abrir cadastro
-
-                cmbRole.Visible = false; // Esconde o campo de perfil
-
-                lblRole.Visible = false; // Esconde o texto do perfil
-
-                btnSubmit.Location = new Point(40, 230); // Define a posição do botão
-
-                btnToggleMode.Location = new Point(40, 285); // Define a posição do botão de alternância
+                btnSubmit.Location = new Point(40, 230);
+                btnToggleMode.Location = new Point(40, 285);
             }
         }
 
-
-        private void btnToggleMode_Click(object sender, EventArgs e) // Evento do botão de alternância
+        private void btnToggleMode_Click(object sender, EventArgs e)
         {
-            _isRegisterMode = !_isRegisterMode; // Inverte entre Login e cadastro
-
-            UpdateModeUI(); // Atualiza a interface
+            _isRegisterMode = !_isRegisterMode;
+            UpdateModeUI();
         }
 
-
-        private async void btnSubmit_Click(object sender, EventArgs e) // Evento do botão principal
+        private async void btnSubmit_Click(object sender, EventArgs e)
         {
-            string username = txtUsername.Text.Trim(); // Obtém o usuário digitado
+            string username = txtUsername.Text.Trim();
+            string password = txtPassword.Text.Trim();
 
-            string password = txtPassword.Text.Trim(); // Obtém a senha digitada
-
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) // Verifica se os campos estão vazios
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                ShowMessage("Preencha todos os campos obrigatórios.", Color.Red); // Mostra mensagem de erro
-
-                return; // Interrompe a execução
+                ShowMessage("Preencha todos os campos obrigatórios.", Color.Red);
+                return;
             }
 
+            btnSubmit.Enabled = false;
 
-            btnSubmit.Enabled = false; // Desabilita o botão durante a requisição
-
-
-            try // Inicia o tratamento de possíveis erros
+            try
             {
-                if (_isRegisterMode) // Verifica se o usuário está cadastrando
+                if (_isRegisterMode)
                 {
-                    string role = cmbRole.SelectedItem?.ToString() ?? "Reader"; // Obtém o perfil selecionado
+                    string role = cmbRole.SelectedItem?.ToString() ?? "Reader";
+                    var registerDto = new RegisterUserDto(username, password, role);
+                    var response = await _authApiService.RegisterAsync(registerDto);
 
-                    var registerDto = new RegisterUserDto(username, password, role); // Cria o DTO de cadastro
-
-                    var response = await _authApiService.RegisterAsync(registerDto); // Envia o cadastro para a API
-
-
-                    if (response != null && response.Success) // Verifica se o cadastro foi realizado
+                    if (response != null && response.Success)
                     {
-                        ShowMessage("Conta criada com sucesso! Faça login.", Color.Green); // Mostra mensagem de sucesso
-
-                        _isRegisterMode = false; // Volta para o modo Login
-
-                        UpdateModeUI(); // Atualiza a interface
+                        ShowMessage("Conta criada com sucesso! Faça login.", Color.Green);
+                        _isRegisterMode = false;
+                        UpdateModeUI();
                     }
-                    else // Executa quando o cadastro falha
+                    else
                     {
-                        ShowMessage(response?.Message ?? "Erro ao realizar cadastro.", Color.Red); // Mostra o erro
+                        ShowMessage(response?.Message ?? "Erro ao realizar cadastro.", Color.Red);
                     }
                 }
-                else // Executa quando está no modo Login
+                else
                 {
-                    var loginDto = new LoginRequestDto(username, password); // Cria o DTO de Login
+                    var loginDto = new LoginRequestDto(username, password);
+                    var response = await _authApiService.LoginAsync(loginDto);
 
-                    var response = await _authApiService.LoginAsync(loginDto); // Envia o Login para a API
-
-
-                    if (response != null && response.Success) // Verifica se o Login foi realizado
+                    if (response != null && response.Success)
                     {
-                        MainForm mainForm = new MainForm(); // Cria o formulário principal
-
-                        mainForm.Show(); // Exibe o formulário principal
-
-                        this.Hide(); // Esconde a tela de Login
+                        MainForm mainForm = new MainForm();
+                        mainForm.Show();
+                        this.Hide();
                     }
-                    else // Executa quando o Login falha
+                    else
                     {
-                        ShowMessage(response?.Message ?? "Credenciais inválidas.", Color.Red); // Mostra o erro
+                        ShowMessage(response?.Message ?? "Credenciais inválidas.", Color.Red);
                     }
                 }
             }
-            catch (Exception ex) // Captura erros durante a execução
+            catch (Exception ex)
             {
-                ShowMessage($"Erro de conexão: {ex.Message}", Color.Red); // Mostra o erro de conexão
+                ShowMessage($"Erro de conexão: {ex.Message}", Color.Red);
             }
-            finally // Executa sempre após o try/catch
+            finally
             {
-                btnSubmit.Enabled = true; // Habilita novamente o botão
+                btnSubmit.Enabled = true;
             }
         }
 
-
-        private void ShowMessage(string text, Color color) // Método para mostrar mensagens
+        private void ShowMessage(string text, Color color)
         {
-            lblStatus.ForeColor = color; // Define a cor da mensagem
-
-            lblStatus.Text = text; // Define o texto da mensagem
+            lblStatus.ForeColor = color;
+            lblStatus.Text = text;
         }
     }
 }
