@@ -11,14 +11,12 @@ namespace T1B_3Library.Desktop
         [STAThread] // Indica que o modelo de threading para o aplicativo é de thread única
         static void Main()
         {
-            // Ativa os estilos visuais modernos para a aplicação
-            Application.EnableVisualStyles();
+            // evita ambiguidade com outros namespaces chamados "Application"
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
-            // Configura o valor padrão de renderização de texto compatível com controles do sistema
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            // Inicia a execução da aplicação abrindo primeiro a tela de Login
-            Application.Run(new LoginForm());
+            // Executa o formulário de login
+            System.Windows.Forms.Application.Run(new LoginForm());
         }
     }
 }

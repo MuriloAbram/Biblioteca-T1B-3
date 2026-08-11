@@ -7,136 +7,73 @@ using static System.Net.WebRequestMethods;
 
 namespace T1B_3Library.Desktop.Services
 {
-    /// <summary>
-    /// Serviço responsável pelas operações CRUD
-    /// relacionadas aos livros da biblioteca.
-    /// </summary>
     public class BooksApiService
     {
-        // ================================================================
-        // HTTP
-        // ================================================================
+        private readonly HttpClientHelper _http;
 
-        private readonly HttpClientHelper _httpHelper;
-
-
-        // ================================================================
-        // CONSTRUTOR
-        // ================================================================
-
-        public BooksApiService(
-            HttpClientHelper httpHelper)
+        //Construtor - Inicializa junto com o código quando o mesmo é chamado.
+        public BooksApiService()
         {
-            _httpHelper =
-                httpHelper
-                ?? throw new ArgumentNullException(
-                    nameof(httpHelper)
-                );
+            _http = HttpClientHelper.Instance;
         }
 
-
-        // ================================================================
-        // GET - TODOS OS LIVROS
-        // ================================================================
-
-        /// <summary>
-        /// Busca todos os livros cadastrados.
+        ///<summary>
+        /// Lista todas os livros via GET /api/books
         /// </summary>
-        public async Task<IEnumerable<BookDto>>
-            GetAllAsync()
+        public async Task<List<BookResponseDto>> GetAllAsync()
         {
-            var books =
-                await _httpHelper.GetAsync<
-                    IEnumerable<BookDto>
-                >("books");
-
-            return books
-                   ?? new List<BookDto>();
-        }
-
-
-        // ================================================================
-        // GET - LIVRO POR ID
-        // ================================================================
-
-        /// <summary>
-        /// Busca um livro pelo ID.
-        /// </summary>
-        public async Task<BookDto?>
-            GetByIdAsync(Guid id)
-        {
-            return await _httpHelper.GetAsync<BookDto>(
-                $"books/{id}"
-            );
-        }
-
-
-        // ================================================================
-        // POST - CRIAR LIVRO
-        // ================================================================
-
-        /// <summary>
-        /// Cadastra um novo livro.
-        /// </summary>
-        public async Task<BookDto?>
-            CreateAsync(
-                CreateBookDto createDto)
-        {
-            if (createDto == null)
+            try
             {
-                throw new ArgumentNullException(
-                    nameof(createDto)
-                );
+                var livros = await _http.GetAsync<List<BookResponseDto>>("/api/books");
+                return livros ?? new List<BookResponseDto>();
             }
-
-            return await _httpHelper.PostAsync<
-                CreateBookDto,
-                BookDto
-            >(
-                "books",
-                createDto
-            );
-        }
-
-
-        // ================================================================
-        // PUT - ATUALIZAR LIVRO
-        // ================================================================
-
-        /// <summary>
-        /// Atualiza os dados de um livro.
-        /// </summary>
-        public async Task<bool>
-            UpdateAsync(
-                Guid id,
-                UpdateBookDto updateDto)
-        {
-            if (updateDto == null)
+            catch
             {
-                throw new ArgumentNullException(
-                    nameof(updateDto)
-                );
+                return new List<BookResponseDto>();
             }
-
-            return await _httpHelper.PutAsync(
-                $"books/{id}",
-                updateDto
-            );
         }
 
-
-        // ================================================================
-        // DELETE - EXCLUIR LIVRO
-        // ================================================================
+        /// <summary>
+        /// Busca um livro específico por ID via GET /api/books/{id} 
+        /// </summary>
+        public async Task<BookResponseDto?> GetByIdAsync(int id)
+        {
+            return await _http.GetAsync<BookResponseDto>($"/api/books/{id}");
+        }
 
         /// <summary>
-        /// Remove um livro pelo ID.
+        /// Cria um novo livro via POST /api/books.
+        /// Requer perfil Admin (verificado pela API).
         /// </summary>
-        public async Task<(bool Success, string ErrorMessage)> DeleteAsync(Guid id)
+        /// <param name="dto">Dados do livro a ser criado</param>
+        /// <returns>Livro criado ou null em caso de erro</returns>
+        public async Task<(bool Success, BookResponseDto? Book, string ErrorMessage)>
+            CreateAsync(CreateBookDto dto)
         {
-            // endpoint relativo consistente com demais chamadas (sem leading '/')
-            return await _httpHelper.DeleteAsync($"books/{id}");
+            return await _http.PostAsync<BookResponseDto>("/api/books", dto);
+        }
+
+        /// <summary>
+        /// Atualiza um livro existente via PUT /api/books/{id}.
+        /// Requer perfil Admin (verificado pela API).
+        /// </summary>
+        public async Task<(bool Success, BookResponseDto? Book, string ErrorMessage)>
+            UpdateAsync(int id, UpdateBookDto dto)
+        {
+            return await _http.PutAsync<BookResponseDto>($"/api/books/{id}", dto);
+        }
+
+        /// <summary>
+        /// Exclui um livro via DELETE /api/books/{id}.
+        /// Requer perfil Admin (verificado pela API).
+        /// </summary>
+        public async Task<(bool Success, string ErrorMessage)> DeleteAsync(int id)
+        {
+            return await _http.DeleteAsync($"/api/books/{id}");
         }
     }
+
+
+
 }
 

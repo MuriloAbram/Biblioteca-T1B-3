@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using T1B_3Library.Application.DTOs;
 using T1B_3Library.Application.Interfaces;
 
-namespace SenacGames.API.Controllers
+namespace T1B_3Library.API.Controllers
 {
     [ApiController] 
     [Route("api/[controller]")]

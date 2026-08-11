@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
-using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace T1B_3Library.Desktop.Helpers
 {
@@ -10,104 +11,94 @@ namespace T1B_3Library.Desktop.Helpers
     /// </summary>
     public static class AppConfig
     {
-        // Instância da configuração
-        private static readonly IConfigurationRoot _configuration;
+        private static JsonDocument? _config;
 
-        // ================================================================
-        // CONSTRUTOR
-        // ================================================================
+        ///<summary>
+        ///URL base da API, Exemplo: "https://localhost:5223"
+        ///
+        /// Resolvida na seguinte ordem pelo ApiEndPointResolver:
+        /// 1. lauchSettings.json do SenacGames.API 
+        /// 2. appsettings.json ApiSessting.BaseUrl (fallback configuravel) fallback: é o valor default caso não seja encontrado no appsettings.json
+        /// 3. String vazia se não encontrada (Program.cs exibe mensagem)
+        ///</summary>   
+        ///
 
-        static AppConfig()
-        {
-            // Diretório onde o executável está sendo executado
-            string basePath = AppContext.BaseDirectory;
+        public static string ApiBaseUrl =>
+                 //?? : Coalescência nula, retorna o valor à esquerda se não for nulo, caso contrário retorna o valor à direita
+                 ApiEndpointResolver.Resolve() ?? string.Empty;
 
-            // Cria o leitor de configuração
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(basePath)
-                .AddJsonFile(
-                    "appsettings.json",
-                    optional: true,
-                    reloadOnChange: true
-                );
+        public static string AppName =>
+              GetNestedValue("AppSettings", "AppName") ?? "T1B-3Library Desktop";
 
-            // Constrói a configuração
-            _configuration = builder.Build();
-        }
+        public static string Version =>
+             GetNestedValue("AppSettings", "Version") ?? "1.0.0";
 
-        // ================================================================
-        // URL DA API
-        // ================================================================
-
-        /// <summary>
-        /// URL base da API.
-        /// </summary>
-        public static string ApiBaseUrl
-        {
-            get
-            {
-                string url =
-                    _configuration["ApiSettings:BaseUrl"]
-                    ?? "https://localhost:7123/api/";
-
-                url = url.Trim();
-
-                // Garante que termine com /
-                if (!url.EndsWith("/"))
-                {
-                    url += "/";
-                }
-
-                return url;
-            }
-        }
-
-        // ================================================================
-        // TIMEOUT
-        // ================================================================
-
-        /// <summary>
-        /// Tempo máximo das requisições HTTP em segundos.
-        /// Valor padrão: 30 segundos.
-        /// </summary>
         public static int Timeout
         {
             get
             {
-                // Lê o valor diretamente como string,
-                // evitando a necessidade do Configuration.Binder.
-                string? timeoutValue =
-                    _configuration["ApiSettings:Timeout"];
-
-                // Tenta converter para inteiro
-                if (int.TryParse(timeoutValue, out int timeout))
-                {
-                    // Impede valores menores ou iguais a zero
-                    if (timeout > 0)
-                    {
-                        return timeout;
-                    }
-                }
-
-                // Valor padrão
-                return 30;
+                var raw = GetNestedValue("AppSettings", "Timeout");
+                return int.TryParse(raw, out var t) ? t : 30;
             }
         }
 
-        // ================================================================
-        // MÉTODO AUXILIAR
-        // ================================================================
 
-        /// <summary>
-        /// Obtém qualquer configuração do appsettings.json.
-        ///
-        /// Exemplo:
-        /// AppConfig.GetValue("ApiSettings:BaseUrl");
-        /// </summary>
-        public static string? GetValue(string key)
+        private static JsonDocument GetConfig()
         {
-            return _configuration[key];
+            if (_config != null) return _config;
+
+            try
+            {
+                var path = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "appsettings.json");
+
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    // Remove comentários (appsettings.json pode ter "// ...")
+                    json = RemoveJsonComments(json);
+                    _config = JsonDocument.Parse(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[AppConfig] Erro ao ler appsettings.json: {ex.Message}");
+            }
+
+            return _config ?? JsonDocument.Parse("{}");
+
+        }
+
+        private static string? GetNestedValue(string section, string key)
+        {
+            try
+            {
+                var config = GetConfig();
+                if (config.RootElement.TryGetProperty(section, out var sectionEl))
+                    if (sectionEl.TryGetProperty(key, out var value))
+                        return value.GetString() ?? value.ToString();
+            }
+            catch { }
+            return null;
+
+        }
+
+        private static string RemoveJsonComments(string json)
+        {
+            var lines = json.Split('\n');
+            var sb = new System.Text.StringBuilder();
+            foreach (var line in lines)
+            {
+                var trimmed = line.TrimStart();
+                if (trimmed.StartsWith("//")) continue;
+                var commentIdx = line.IndexOf("//", StringComparison.Ordinal);
+                sb.AppendLine(commentIdx > 0 ? line[..commentIdx] : line);
+            }
+            return sb.ToString();
         }
     }
 }
+
 

@@ -1,5 +1,5 @@
 // =============================================================================
-// SenacGames.API - Program.cs
+// T1B-3Library.API - Program.cs
 // =============================================================================
 //  CONCEITO IMPORTANTE: Program.cs
 // Este é o PONTO DE ENTRADA da aplicação API.
@@ -15,7 +15,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SenacGames.Application.Services;
+using T1B_3Library.Application.Services;
 using T1B_3Library.Application.Interfaces;
 using T1B_3Library.Application.Services;
 using T1B_3Library.Domain.Interfaces;
@@ -77,8 +77,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 // AddScoped registra um serviço com ciclo de vida "por requisição".
 // Isso significa que uma nova instância é criada para cada requisição HTTP.
 //
-// Exemplo: quando um controller precisa do IGameService,
-// o .NET automaticamente cria um GameService e injeta no construtor.
+// Exemplo: quando um controller precisa do IBookService,
+// o .NET automaticamente cria um BookService e injeta no construtor.
 // =====================================================================
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IGenderRepository, GenderRepository>();
@@ -105,7 +105,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "T1B-3Library API",
         Version = "v1",
-        Description = "API REST do sistema SenacGames — Catálogo de livros para ensino de ASP.NET Core"
+        Description = "API REST do sistema T1B-3Library — Catálogo de livros para ensino de ASP.NET Core"
     });
 });
 
@@ -151,7 +151,7 @@ app.MapControllers();
 // SEED DATA — Popula o banco com dados iniciais
 // =====================================================================
 //  CONCEITO: O seed é executado na inicialização da aplicação.
-// Ele cria categorias, games de exemplo e o usuário admin.
+// Ele cria categorias, livros de exemplo e o usuário admin.
 // =====================================================================
 await SeedData.SeedAsync(app.Services);
 

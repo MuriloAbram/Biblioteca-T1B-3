@@ -313,6 +313,7 @@
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Login - T1B3 Library";
+            Load += LoginForm_Load;
             pnlBrand.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             pnlContent.ResumeLayout(false);

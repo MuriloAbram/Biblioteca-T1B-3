@@ -13,13 +13,12 @@ using T1B_3Library.Desktop.Helpers;
 namespace T1B_3Library.Desktop.Services
 {
     /// <summary>
-    /// Serviço de comunicação com os endpoints de autenticação da API.
+    /// Serviço de comunicação com os endpoints de autenticação da API
     /// </summary>
     public class AuthApiService
     {
         private readonly HttpClientHelper _http;
 
-        // Construtor sem parâmetros seguindo o padrão do exemplo (uso do singleton)
         public AuthApiService()
         {
             _http = HttpClientHelper.Instance;
@@ -27,9 +26,18 @@ namespace T1B_3Library.Desktop.Services
 
         /// <summary>
         /// Realiza o login chamando POST /api/auth/login.
-        /// Retorna tupla (Sucesso, User, ErrorMessage).
+        ///
+        /// O que acontece internamente:
+        /// 1. Envia email + senha para a API em formato JSON
+        /// 2. A API valida as credenciais com o ASP.NET Core Identity
+        /// 3. Se válido, a API retorna um cookie de sessão + dados do usuário
+        /// 4. O CookieContainer do HttpClient armazena o cookie automaticamente
+        /// 5. Retornamos os dados do usuário para o LoginForm
         /// </summary>
-        public async Task<(bool Sucesso, AuthResponseDto? User, string ErrorMessage)> LoginAsync(string email, string password)
+        /// <param name="email">E-mail do usuário</param>
+        /// <param name="password">Senha do usuário</param>
+        /// <returns>Tupla com sucesso, dados do usuário e mensagem de erro</returns>
+        public async Task<(bool Sucesso, UserResponseDto? User, string ErrorMessage)> LoginAsync(string email, string password)
         {
             var loginDto = new LoginRequestDto
             {
@@ -37,27 +45,20 @@ namespace T1B_3Library.Desktop.Services
                 Password = password
             };
 
-            var (sucesso, data, error) = await _http.PostAsync<AuthResponseDto>("/api/auth/login", loginDto);
-
-            if (sucesso && data != null && !string.IsNullOrWhiteSpace(data.Token))
-            {
-                // Armazena usuário e token na sessão local
-                SessionManager.StartSession(data, data.Token);
-            }
+            var (sucesso, data, error) = await _http.PostAsync<UserResponseDto>(
+                "/api/auth/login", loginDto);
 
             return (sucesso, data, error);
         }
 
         /// <summary>
         /// Realiza o logout chamando POST /api/auth/logout.
-        /// Limpa cookies e sessão local.
+        /// Também limpa os cookies de sessão localmente
         /// </summary>
         public async Task<(bool Sucesso, string ErrorMessage)> LogoutAsync()
         {
             var result = await _http.PostEmptyAsync("/api/auth/logout");
 
-            // Limpa sessão local independentemente do resultado da API
-            SessionManager.ClearSession();
             _http.ClearCookies();
 
             return result;
@@ -65,17 +66,18 @@ namespace T1B_3Library.Desktop.Services
 
         /// <summary>
         /// Busca os dados do usuário autenticado via GET /api/auth/me.
+        /// Útil para verificar se a sessão ainda está ativa
         /// </summary>
-        public async Task<AuthResponseDto?> GetCurrentUserAsync()
+        public async Task<UserResponseDto?> GetCurrentUserAsync()
         {
-            return await _http.GetAsync<AuthResponseDto>("/api/auth/me");
+            return await _http.GetAsync<UserResponseDto>("/api/auth/me");
         }
 
         /// <summary>
         /// Registra um novo usuário via POST /api/auth/register.
-        /// Retorna tupla (Sucesso, ErrorMessage).
         /// </summary>
-        public async Task<(bool Sucesso, string ErrorMessage)> RegisterAsync(string email, string password, string confirmPassword)
+        public async Task<(bool Sucesso, string ErrorMessage)> RegisterAsync(
+            string email, string password, string confirmPassword)
         {
             var dto = new RegisterRequestDto
             {
@@ -87,25 +89,5 @@ namespace T1B_3Library.Desktop.Services
             var (success, _, error) = await _http.PostAsync<object>("/api/auth/register", dto);
             return (success, error);
         }
-
-        /// <summary>
-        /// Verifica se existe sessão ativa (token armazenado localmente).
-        /// </summary>
-        public bool IsAuthenticated() => !string.IsNullOrWhiteSpace(SessionManager.Token);
-
-        /// <summary>
-        /// Limpa sessão apenas localmente.
-        /// </summary>
-        public void ClearLocalSession()
-        {
-            SessionManager.ClearSession();
-            _http.ClearCookies();
-        }
-
-        /// <summary>
-        /// Alias para verificar sessão ativa.
-        /// </summary>
-        public bool HasActiveSession() => !string.IsNullOrWhiteSpace(SessionManager.Token);
     }
 }
-

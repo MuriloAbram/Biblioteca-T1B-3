@@ -3,7 +3,7 @@ using System.Linq;
 using T1B_3Library.Application.DTOs;
 using T1B_3Library.Application.Interfaces;
 
-namespace SenacGames.Application.Services
+namespace T1B_3Library.Application.Services
 {
     public class UsuariosService : IUsuariosService
     {

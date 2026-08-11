@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -11,879 +12,388 @@ namespace T1B_3Library.Desktop.Helpers
 {
     /// <summary>
     /// Helper centralizado para comunicação HTTP com a API.
-    ///
-    /// Responsável por:
-    /// - GET
-    /// - POST
-    /// - PUT
-    /// - DELETE
-    /// - Autenticação JWT
-    /// - Cookies de sessão
-    /// - Serialização e desserialização JSON
-    /// - Tratamento de erros
-    /// - Verificação de disponibilidade da API
-    ///
-    /// O HttpClient é reutilizado através do padrão Singleton.
+    /// Gerencia cookies de sessão, serialização JSON e tratamento de erros.
+    /// A URL base é descoberta automaticamente pelo <see cref="ApiEndpointResolver"/>.
     /// </summary>
     public sealed class HttpClientHelper
     {
-        // ================================================================
-        // SINGLETON
-        // ================================================================
-
+        // Instância Singleton (thread-safe)
         private static readonly Lazy<HttpClientHelper> _instance =
             new(() => new HttpClientHelper());
 
-        /// <summary>
-        /// Instância global do HttpClientHelper.
-        /// </summary>
+        /// <summary>Ponto de acesso global ao HttpClientHelper.</summary>
         public static HttpClientHelper Instance => _instance.Value;
 
-
-        // ================================================================
+        // =====================================================================
         // CAMPOS PRIVADOS
-        // ================================================================
+        // =====================================================================
 
         /// <summary>
-        /// Armazena os cookies recebidos pela API.
+        /// CookieContainer: armazena os cookies recebidos da API.
+        /// Quando a API retorna um cookie de autenticação após o login,
+        /// o CookieContainer o armazena automaticamente.
+        /// Nas próximas requisições, o cookie é enviado de volta para a API.
         /// </summary>
         private readonly CookieContainer _cookieContainer;
 
         /// <summary>
-        /// Handler responsável pelo gerenciamento da comunicação HTTP.
+        /// HttpClientHandler: configuração de baixo nível do HttpClient.
+        /// Permite configurar cookies, certificados SSL, proxies, etc.
         /// </summary>
         private readonly HttpClientHandler _handler;
 
         /// <summary>
-        /// Cliente HTTP reutilizado pela aplicação.
+        /// HttpClient: o cliente HTTP principal para todas as requisições.
+        /// Reutilizado em todas as chamadas para evitar esgotamento de sockets.
+        /// A BaseAddress é definida a partir do ApiEndpointResolver.
         /// </summary>
         private readonly HttpClient _client;
 
         /// <summary>
-        /// Configurações utilizadas na serialização JSON.
+        /// Opções de serialização JSON.
+        /// PropertyNameCaseInsensitive: aceita "title" e "Title" como iguais.
         /// </summary>
-        private readonly JsonSerializerOptions _jsonOptions;
+        private readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
-
-        // ================================================================
+        // =====================================================================
         // CONSTRUTOR
-        // ================================================================
+        // =====================================================================
 
         private HttpClientHelper()
         {
-            // ------------------------------------------------------------
-            // Cookie Container
-            // ------------------------------------------------------------
-
+            // Cria o container de cookies para manter a sessão
             _cookieContainer = new CookieContainer();
 
-
-            // ------------------------------------------------------------
-            // Handler
-            // ------------------------------------------------------------
-
+            // Configura o handler com suporte a cookies
             _handler = new HttpClientHandler
             {
                 CookieContainer = _cookieContainer,
-
-                // Permite que o HttpClient gerencie cookies automaticamente
+                // true = o handler gerencia cookies automaticamente
                 UseCookies = true,
-
-                // Evita redirecionamentos automáticos.
-                // Assim conseguimos tratar 401/403 corretamente.
+                // false = não seguir redirects (a API retorna 401/403 diretamente)
                 AllowAutoRedirect = false,
-
-                // Aceita certificado HTTPS inválido apenas para desenvolvimento.
-                // Em produção, essa configuração deve ser removida.
+                // Aceita certificados SSL inválidos em desenvolvimento.
+                // Em produção com HTTPS válido, remova esta linha.
                 ServerCertificateCustomValidationCallback =
                     HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             };
 
-
-            // ------------------------------------------------------------
-            // URL da API
-            // ------------------------------------------------------------
-
-            string baseUrl = AppConfig.ApiBaseUrl;
+            // ── URL base resolvida automaticamente ────────────────────────────
+            // ApiEndpointResolver descobre a URL a partir do launchSettings.json
+            // da API ou do appsettings.json do Desktop (fallback).
+            // Nunca há porta hardcoded aqui.
+            var baseUrl = AppConfig.ApiBaseUrl;
 
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
-                throw new InvalidOperationException(
-                    "A URL da API não foi configurada. " +
-                    "Verifique o AppConfig.ApiBaseUrl."
-                );
-            }
-
-            // Garante que a URL termine com /
-            if (!baseUrl.EndsWith("/"))
-            {
-                baseUrl += "/";
-            }
-
-
-            // ------------------------------------------------------------
-            // HttpClient
-            // ------------------------------------------------------------
-
-            _client = new HttpClient(_handler)
-            {
-                BaseAddress = new Uri(baseUrl),
-
-                // Tempo máximo de espera de uma requisição
-                Timeout = TimeSpan.FromSeconds(
-                    AppConfig.Timeout > 0
-                        ? AppConfig.Timeout
-                        : 30
-                )
-            };
-
-
-            // ------------------------------------------------------------
-            // Cabeçalhos padrão
-            // ------------------------------------------------------------
-
-            _client.DefaultRequestHeaders.Accept.Clear();
-
-            _client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json")
-            );
-
-
-            // ------------------------------------------------------------
-            // JSON
-            // ------------------------------------------------------------
-
-            _jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-        }
-
-
-        // ================================================================
-        // AUTENTICAÇÃO
-        // ================================================================
-
-        /// <summary>
-        /// Adiciona automaticamente o JWT da sessão ao cabeçalho
-        /// Authorization da requisição.
-        /// </summary>
-        private void AttachBearerToken()
-        {
-            if (!string.IsNullOrWhiteSpace(SessionManager.Token))
-            {
-                _client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue(
-                        "Bearer",
-                        SessionManager.Token
-                    );
+                // Sem URL: cria o client sem BaseAddress.
+                // Program.cs já deve ter tratado esse caso antes de chegar aqui.
+                _client = new HttpClient(_handler)
+                {
+                    Timeout = TimeSpan.FromSeconds(AppConfig.Timeout)
+                };
             }
             else
             {
-                _client.DefaultRequestHeaders.Authorization = null;
+                // Garante que a URL termina com "/"
+                if (!baseUrl.EndsWith('/'))
+                    baseUrl += "/";
+
+                _client = new HttpClient(_handler)
+                {
+                    BaseAddress = new Uri(baseUrl),
+                    Timeout = TimeSpan.FromSeconds(AppConfig.Timeout)
+                };
             }
+
+            // Cabeçalho padrão: aceita JSON como resposta
+            _client.DefaultRequestHeaders.Accept.Add(
+                new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-
-        // ================================================================
-        // PING DA API
-        // ================================================================
+        // =====================================================================
+        // VALIDAÇÃO DE DISPONIBILIDADE
+        // =====================================================================
 
         /// <summary>
-        /// Verifica se a API está funcionando.
+        /// Verifica se a API está disponível fazendo uma requisição simples.
+        /// Retorna (true, "") se disponível, ou (false, mensagem_amigável) se não.
+        ///
+        /// Usado pelo Program.cs antes de abrir o LoginForm.
+        ///
+        /// IMPORTANTE: Esta verificação é opcional e não-bloqueante.
+        /// Se a API não responder, o usuário pode tentar de qualquer forma —
+        /// as mensagens de erro específicas aparecerão na tela de Login.
         /// </summary>
         public async Task<(bool IsAvailable, string ErrorMessage)> PingApiAsync()
         {
+            if (_client.BaseAddress == null)
+            {
+                return (false, "URL da API não configurada. Verifique o launchSettings.json " +
+                               "do projeto T1B-3Library.API ou o appsettings.json do Desktop.");
+            }
+
             try
             {
-                using var cts =
-                    new CancellationTokenSource(
-                        TimeSpan.FromSeconds(5)
-                    );
+                // Faz uma requisição HEAD simples para verificar conectividade
+                // GET /api/games é público e leve o suficiente para um ping
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                var response = await _client.GetAsync("/api/book", cts.Token);
 
-                // Endpoint público da aplicação.
-                // Caso sua API tenha outro endpoint público,
-                // altere aqui.
-                var response = await _client.GetAsync(
-                    "api/books",
-                    cts.Token
-                );
-
-                // Qualquer resposta HTTP significa que a API respondeu.
+                // Qualquer resposta HTTP (mesmo 401/403) indica que a API está rodando
                 return (true, string.Empty);
             }
             catch (Exception ex)
             {
-                return (
-                    false,
-                    CategorizeConnectionError(
-                        ex,
-                        _client.BaseAddress?.ToString() ?? ""
-                    )
-                );
+                return (false, CategorizeConnectionError(ex, _client.BaseAddress?.ToString() ?? ""));
             }
         }
 
-
-        // ================================================================
-        // GET
-        // ================================================================
+        // =====================================================================
+        // MÉTODOS HTTP
+        // =====================================================================
 
         /// <summary>
-        /// Executa uma requisição GET e converte a resposta para T.
+        /// Realiza uma requisição GET e desserializa o resultado em T.
+        /// Uso: var games = await http.GetAsync&lt;List&lt;GameResponseDto&gt;&gt;("/api/games");
         /// </summary>
+        /// <typeparam name="T">Tipo de retorno esperado</typeparam>
+        /// <param name="endpoint">Caminho do endpoint (ex: "/api/games")</param>
+        /// <returns>Objeto desserializado ou null em caso de erro</returns>
         public async Task<T?> GetAsync<T>(string endpoint)
         {
             try
             {
-                AttachBearerToken();
+                var response = await _client.GetAsync(endpoint);
 
-                var response =
-                    await _client.GetAsync(endpoint);
-
-                if (!response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    return default;
+                    return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
                 }
 
-                var responseContent =
-                    await response.Content.ReadAsStringAsync();
-
-                if (string.IsNullOrWhiteSpace(responseContent))
-                {
-                    return default;
-                }
-
-                return JsonSerializer.Deserialize<T>(
-                    responseContent,
-                    _jsonOptions
-                );
+                return default;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(
-                    $"[GET] Erro em {endpoint}: {ex.Message}"
-                );
-
+                System.Diagnostics.Debug.WriteLine($"[GET] Erro em {endpoint}: {ex.Message}");
                 throw;
             }
         }
 
-
-        // ================================================================
-        // POST - REQUEST + RESPONSE
-        // ================================================================
-
         /// <summary>
-        /// Executa POST enviando um objeto e recebendo outro objeto.
-        ///
-        /// Exemplo:
-        ///
-        /// PostAsync<LoginRequestDto, AuthResponseDto>()
+        /// Realiza uma requisição POST com corpo JSON e retorna T.
+        /// Uso: var game = await http.PostAsync&lt;GameResponseDto&gt;("/api/games", createDto);
         /// </summary>
-        public async Task<TResponse?> PostAsync<TRequest, TResponse>(
-            string endpoint,
-            TRequest data)
+        public async Task<(bool Success, T? Data, string ErrorMessage)> PostAsync<T>(
+            string endpoint, object body)
         {
             try
             {
-                AttachBearerToken();
+                var json = JsonSerializer.Serialize(body);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                string json =
-                    JsonSerializer.Serialize(
-                        data,
-                        _jsonOptions
-                    );
-
-                using var body =
-                    new StringContent(
-                        json,
-                        Encoding.UTF8,
-                        "application/json"
-                    );
-
-                var response =
-                    await _client.PostAsync(
-                        endpoint,
-                        body
-                    );
-
-                string responseContent =
-                    await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    System.Diagnostics.Debug.WriteLine(
-                        $"[POST] {endpoint} -> " +
-                        $"{(int)response.StatusCode} " +
-                        $"{response.ReasonPhrase}\n" +
-                        responseContent
-                    );
-
-                    return default;
-                }
-
-                if (string.IsNullOrWhiteSpace(responseContent))
-                {
-                    return default;
-                }
-
-                try
-                {
-                    return JsonSerializer.Deserialize<TResponse>(
-                        responseContent,
-                        _jsonOptions
-                    );
-                }
-                catch (JsonException ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(
-                        $"[POST] Erro ao converter JSON: {ex.Message}"
-                    );
-
-                    return default;
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    $"[POST] Erro em {endpoint}: {ex.Message}"
-                );
-
-                throw;
-            }
-        }
-
-
-        // ================================================================
-        // POST - RESPONSE
-        // ================================================================
-
-        /// <summary>
-        /// Executa POST enviando qualquer objeto e recebendo T.
-        ///
-        /// Retorna uma tupla com:
-        /// - Success
-        /// - Data
-        /// - ErrorMessage
-        /// </summary>
-        public async Task<(bool Success, T? Data, string ErrorMessage)>
-            PostAsync<T>(
-                string endpoint,
-                object body)
-        {
-            try
-            {
-                AttachBearerToken();
-
-                string json =
-                    JsonSerializer.Serialize(
-                        body,
-                        _jsonOptions
-                    );
-
-                using var content =
-                    new StringContent(
-                        json,
-                        Encoding.UTF8,
-                        "application/json"
-                    );
-
-                var response =
-                    await _client.PostAsync(
-                        endpoint,
-                        content
-                    );
-
-                string responseBody =
-                    await response.Content.ReadAsStringAsync();
+                var response = await _client.PostAsync(endpoint, content);
+                var responseBody = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    if (string.IsNullOrWhiteSpace(responseBody))
-                    {
-                        return (
-                            true,
-                            default,
-                            string.Empty
-                        );
-                    }
-
-                    try
-                    {
-                        var data =
-                            JsonSerializer.Deserialize<T>(
-                                responseBody,
-                                _jsonOptions
-                            );
-
-                        return (
-                            true,
-                            data,
-                            string.Empty
-                        );
-                    }
-                    catch (JsonException ex)
-                    {
-                        return (
-                            false,
-                            default,
-                            $"Erro ao interpretar resposta da API: {ex.Message}"
-                        );
-                    }
+                    var data = JsonSerializer.Deserialize<T>(responseBody, _jsonOptions);
+                    return (true, data, string.Empty);
                 }
 
-                return (
-                    false,
-                    default,
-                    TryExtractErrorMessage(responseBody)
-                );
+                var error = TryExtractErrorMessage(responseBody);
+                return (false, default, error);
             }
             catch (Exception ex)
             {
-                return (
-                    false,
-                    default,
-                    CategorizeConnectionError(
-                        ex,
-                        endpoint
-                    )
-                );
+                var friendly = CategorizeConnectionError(ex, endpoint);
+                return (false, default, friendly);
             }
         }
 
-
-        // ================================================================
-        // POST SEM CORPO
-        // ================================================================
-
         /// <summary>
-        /// Executa um POST sem enviar conteúdo.
-        ///
-        /// Útil para logout e outras ações simples.
+        /// Realiza uma requisição PUT (atualização) e retorna T.
         /// </summary>
-        public async Task<(bool Success, string ErrorMessage)>
-            PostEmptyAsync(
-                string endpoint)
+        public async Task<(bool Success, T? Data, string ErrorMessage)> PutAsync<T>(
+            string endpoint, object body)
         {
             try
             {
-                AttachBearerToken();
+                var json = JsonSerializer.Serialize(body);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response =
-                    await _client.PostAsync(
-                        endpoint,
-                        null
-                    );
+                var response = await _client.PutAsync(endpoint, content);
+                var responseBody = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return (
-                        true,
-                        string.Empty
-                    );
+                    var data = JsonSerializer.Deserialize<T>(responseBody, _jsonOptions);
+                    return (true, data, string.Empty);
                 }
 
-                string body =
-                    await response.Content.ReadAsStringAsync();
-
-                return (
-                    false,
-                    TryExtractErrorMessage(body)
-                );
+                var error = TryExtractErrorMessage(responseBody);
+                return (false, default, error);
             }
             catch (Exception ex)
             {
-                return (
-                    false,
-                    CategorizeConnectionError(
-                        ex,
-                        endpoint
-                    )
-                );
+                var friendly = CategorizeConnectionError(ex, endpoint);
+                return (false, default, friendly);
             }
         }
 
-
-        // ================================================================
-        // PUT - REQUEST + RESPONSE
-        // ================================================================
-
         /// <summary>
-        /// Executa PUT enviando um objeto e recebendo outro objeto.
+        /// Realiza uma requisição DELETE.
         /// </summary>
-        public async Task<TResponse?> PutAsync<TRequest, TResponse>(
-            string endpoint,
-            TRequest data)
+        public async Task<(bool Success, string ErrorMessage)> DeleteAsync(string endpoint)
         {
             try
             {
-                AttachBearerToken();
-
-                string json =
-                    JsonSerializer.Serialize(
-                        data,
-                        _jsonOptions
-                    );
-
-                using var body =
-                    new StringContent(
-                        json,
-                        Encoding.UTF8,
-                        "application/json"
-                    );
-
-                var response =
-                    await _client.PutAsync(
-                        endpoint,
-                        body
-                    );
-
-                string responseContent =
-                    await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    return default;
-                }
-
-                if (string.IsNullOrWhiteSpace(responseContent))
-                {
-                    return default;
-                }
-
-                return JsonSerializer.Deserialize<TResponse>(
-                    responseContent,
-                    _jsonOptions
-                );
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    $"[PUT] Erro em {endpoint}: {ex.Message}"
-                );
-
-                throw;
-            }
-        }
-
-
-        // ================================================================
-        // PUT - SOMENTE BOOL
-        // ================================================================
-
-        /// <summary>
-        /// Executa PUT e retorna apenas true/false.
-        ///
-        /// Compatível com o código antigo:
-        ///
-        /// bool sucesso = await http.PutAsync(
-        ///     "api/books/1",
-        ///     livro
-        /// );
-        /// </summary>
-        public async Task<bool> PutAsync<TRequest>(
-            string endpoint,
-            TRequest data)
-        {
-            try
-            {
-                AttachBearerToken();
-
-                string json =
-                    JsonSerializer.Serialize(
-                        data,
-                        _jsonOptions
-                    );
-
-                using var body =
-                    new StringContent(
-                        json,
-                        Encoding.UTF8,
-                        "application/json"
-                    );
-
-                var response =
-                    await _client.PutAsync(
-                        endpoint,
-                        body
-                    );
-
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(
-                    $"[PUT] Erro em {endpoint}: {ex.Message}"
-                );
-
-                return false;
-            }
-        }
-
-
-        // ================================================================
-        // DELETE
-        // ================================================================
-
-        /// <summary>
-        /// Executa DELETE e retorna sucesso ou erro.
-        /// </summary>
-        public async Task<(bool Success, string ErrorMessage)>
-            DeleteAsync(
-                string endpoint)
-        {
-            try
-            {
-                AttachBearerToken();
-
-                var response =
-                    await _client.DeleteAsync(
-                        endpoint
-                    );
+                var response = await _client.DeleteAsync(endpoint);
 
                 if (response.IsSuccessStatusCode)
-                {
-                    return (
-                        true,
-                        string.Empty
-                    );
-                }
+                    return (true, string.Empty);
 
-                string body =
-                    await response.Content.ReadAsStringAsync();
-
-                return (
-                    false,
-                    TryExtractErrorMessage(body)
-                );
+                var body = await response.Content.ReadAsStringAsync();
+                return (false, TryExtractErrorMessage(body));
             }
             catch (Exception ex)
             {
-                return (
-                    false,
-                    CategorizeConnectionError(
-                        ex,
-                        endpoint
-                    )
-                );
+                return (false, CategorizeConnectionError(ex, endpoint));
             }
         }
 
+        /// <summary>
+        /// Realiza um POST sem corpo e retorna apenas sucesso/erro.
+        /// Útil para logout e ações simples.
+        /// </summary>
+        public async Task<(bool Success, string ErrorMessage)> PostEmptyAsync(string endpoint)
+        {
+            try
+            {
+                var response = await _client.PostAsync(endpoint, null);
 
-        // ================================================================
-        // LIMPAR COOKIES
-        // ================================================================
+                if (response.IsSuccessStatusCode)
+                    return (true, string.Empty);
+
+                var body = await response.Content.ReadAsStringAsync();
+                return (false, TryExtractErrorMessage(body));
+            }
+            catch (Exception ex)
+            {
+                return (false, CategorizeConnectionError(ex, endpoint));
+            }
+        }
+
+        // =====================================================================
+        // MÉTODOS AUXILIARES
+        // =====================================================================
 
         /// <summary>
-        /// Remove os cookies armazenados pelo HttpClient.
-        ///
-        /// O JWT também é removido do header.
+        /// Limpa os cookies de sessão (logout local).
+        /// Após isso, as próximas requisições não terão autenticação.
         /// </summary>
         public void ClearCookies()
         {
-            var baseUri =
-                _client.BaseAddress;
-
+            var baseUri = _client.BaseAddress;
             if (baseUri != null)
             {
-                var cookies =
-                    _cookieContainer.GetCookies(
-                        baseUri
-                    );
-
+                var cookies = _cookieContainer.GetCookies(baseUri);
                 foreach (Cookie cookie in cookies)
-                {
                     cookie.Expired = true;
-                }
             }
-
-            _client.DefaultRequestHeaders.Authorization = null;
         }
 
-
-        // ================================================================
-        // EXTRAÇÃO DE ERROS
-        // ================================================================
-
         /// <summary>
-        /// Tenta encontrar uma mensagem amigável
-        /// dentro da resposta JSON da API.
+        /// Tenta extrair a mensagem de erro de um corpo JSON de resposta da API.
+        /// A API retorna: { "message": "..." }
         /// </summary>
-        private string TryExtractErrorMessage(
-            string json)
+        private string TryExtractErrorMessage(string json)
         {
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return "Erro desconhecido.";
-            }
-
             try
             {
-                using JsonDocument document =
-                    JsonDocument.Parse(json);
-
-                JsonElement root =
-                    document.RootElement;
-
-                // message
-                if (root.TryGetProperty(
-                        "message",
-                        out JsonElement message))
-                {
-                    return message.GetString()
-                           ?? "Erro desconhecido.";
-                }
-
-                // title
-                if (root.TryGetProperty(
-                        "title",
-                        out JsonElement title))
-                {
-                    return title.GetString()
-                           ?? "Erro desconhecido.";
-                }
-
-                // error
-                if (root.TryGetProperty(
-                        "error",
-                        out JsonElement error))
-                {
-                    return error.GetString()
-                           ?? "Erro desconhecido.";
-                }
-
-                // detail
-                if (root.TryGetProperty(
-                        "detail",
-                        out JsonElement detail))
-                {
-                    return detail.GetString()
-                           ?? "Erro desconhecido.";
-                }
+                var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("message", out var msg))
+                    return msg.GetString() ?? "Erro desconhecido.";
+                if (doc.RootElement.TryGetProperty("title", out var title))
+                    return title.GetString() ?? "Erro desconhecido.";
             }
-            catch
-            {
-                // Se não for JSON, retorna o texto original.
-            }
+            catch { }
 
-            return json;
+            return string.IsNullOrEmpty(json) ? "Erro desconhecido." : json;
         }
 
-
-        // ================================================================
-        // TRATAMENTO DE ERROS DE CONEXÃO
-        // ================================================================
-
         /// <summary>
-        /// Converte erros técnicos em mensagens mais fáceis
-        /// para o usuário entender.
+        /// Categoriza exceções de conexão em mensagens amigáveis para o usuário.
+        ///
+        /// Tratamento específico por tipo de erro:
+        ///   - Conexão recusada  API não está rodando
+        ///   - Timeout          API lenta ou sobrecarregada
+        ///   - SSL              Problema de certificado
+        ///   - DNS              URL inválida ou sem rede
+        ///   - Genérico         Mensagem original com contexto
         /// </summary>
-        private string CategorizeConnectionError(
-            Exception ex,
-            string endpoint)
+        private string CategorizeConnectionError(Exception ex, string endpoint)
         {
             System.Diagnostics.Debug.WriteLine(
-                $"[HttpClientHelper] " +
-                $"Erro em '{endpoint}': " +
-                $"{ex.GetType().Name} - " +
-                $"{ex.Message}"
-            );
+                $"[HttpClientHelper] Erro em '{endpoint}': {ex.GetType().Name} — {ex.Message}");
 
-
-            // ------------------------------------------------------------
-            // TIMEOUT
-            // ------------------------------------------------------------
-
-            if (ex is TaskCanceledException ||
-                ex is OperationCanceledException)
+            // ── Timeout ──────────────────────────────────────────────────────
+            if (ex is TaskCanceledException or OperationCanceledException)
             {
-                return
-                    "A requisição excedeu o tempo limite.\n\n" +
-                    "Verifique se a API está funcionando normalmente.";
+                return "⏱ A requisição excedeu o tempo limite.\n" +
+                       "Verifique se a API está respondendo normalmente.";
             }
 
-
-            // ------------------------------------------------------------
-            // HTTP REQUEST
-            // ------------------------------------------------------------
-
-            if (ex is HttpRequestException httpException)
+            if (ex is HttpRequestException httpEx)
             {
-                string message =
-                    httpException.Message.ToLowerInvariant();
+                var msg = httpEx.Message.ToLowerInvariant();
 
-
-                // --------------------------------------------------------
-                // CONEXÃO RECUSADA
-                // --------------------------------------------------------
-
-                if (message.Contains("connection refused") ||
-                    message.Contains("actively refused") ||
-                    message.Contains("no connection could be made"))
+                // ── Conexão recusada (API desligada) ─────────────────────────
+                if (msg.Contains("connection refused") ||
+                    msg.Contains("actively refused") ||
+                    msg.Contains("no connection could be made"))
                 {
-                    return
-                        "A API não está em execução.\n\n" +
-                        $"URL configurada: {_client.BaseAddress}\n\n" +
-                        "Verifique se o projeto " +
-                        "T1B_3Library.API está rodando.";
+                    var apiUrl = _client.BaseAddress?.ToString() ?? "URL não configurada";
+                    return $"❌ A API não está em execução.\n\n" +
+                           $"URL configurada: {apiUrl}\n\n" +
+                           $"Verifique se o projeto T1B-3Library.API está rodando no Visual Studio.";
                 }
 
-
-                // --------------------------------------------------------
-                // SSL
-                // --------------------------------------------------------
-
-                if (message.Contains("ssl") ||
-                    message.Contains("certificate") ||
-                    message.Contains("https"))
+                // ── SSL / Certificado ─────────────────────────────────────────
+                if (msg.Contains("ssl") || msg.Contains("certificate") ||
+                    msg.Contains("https"))
                 {
-                    return
-                        "Erro de conexão SSL.\n\n" +
-                        "Verifique o certificado HTTPS da API " +
-                        "ou tente utilizar o perfil HTTP.";
+                    return "🔒 Erro de conexão SSL.\n\n" +
+                           "Tente usar HTTP em vez de HTTPS.\n" +
+                           "No launchSettings.json, selecione o perfil 'http'.";
                 }
 
-
-                // --------------------------------------------------------
-                // DNS
-                // --------------------------------------------------------
-
-                if (message.Contains("name or service not known") ||
-                    message.Contains("no such host") ||
-                    message.Contains("getaddrinfo"))
+                // ── DNS / Host não encontrado ─────────────────────────────────
+                if (msg.Contains("name or service not known") ||
+                    msg.Contains("no such host") ||
+                    msg.Contains("getaddrinfo"))
                 {
-                    return
-                        "Host da API não encontrado.\n\n" +
-                        $"URL: {_client.BaseAddress}";
+                    return $"🌐 Host não encontrado.\n\n" +
+                           $"Verifique a URL da API: {_client.BaseAddress}";
                 }
 
-
-                return
-                    $"Erro de comunicação com a API:\n" +
-                    $"{httpException.Message}";
+                // ── Erro HTTP genérico ────────────────────────────────────────
+                return $"⚠ Erro de comunicação com a API:\n{httpEx.Message}";
             }
 
-
-            // ------------------------------------------------------------
-            // URI INVÁLIDA
-            // ------------------------------------------------------------
-
-            if (ex is UriFormatException ||
-                ex is InvalidOperationException)
+            // ── URL inválida ──────────────────────────────────────────────────
+            if (ex is UriFormatException or InvalidOperationException)
             {
-                return
-                    "A URL da API é inválida.\n\n" +
-                    "Verifique o AppConfig.ApiBaseUrl.";
+                return "⚠ URL da API inválida.\n\n" +
+                       "Verifique o appsettings.json → ApiSettings.BaseUrl\n" +
+                       "ou o launchSettings.json do projeto T1B-3Library.API.";
             }
 
-
-            // ------------------------------------------------------------
-            // ERRO GENÉRICO
-            // ------------------------------------------------------------
-
-            return
-                $"Erro inesperado:\n{ex.Message}";
+            // ── Erro genérico ─────────────────────────────────────────────────
+            return $"⚠ Erro inesperado:\n{ex.Message}";
         }
     }
 }

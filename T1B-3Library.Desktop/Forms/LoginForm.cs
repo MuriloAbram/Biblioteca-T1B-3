@@ -11,7 +11,7 @@ namespace T1B_3Library.Desktop.Forms
 {
     public partial class LoginForm : Form
     {
-        private readonly AuthApiService _authApiService;
+        private AuthApiService _authService = null!;
 
         private bool _isRegisterMode = false;
 
@@ -19,12 +19,6 @@ namespace T1B_3Library.Desktop.Forms
         {
             InitializeComponent();
 
-            // Usa a instância Singleton do HttpClientHelper
-            _authApiService =
-                new AuthApiService(HttpClientHelper.Instance);
-
-            ApplyTheme();
-            UpdateModeUI();
         }
 
 
@@ -114,144 +108,85 @@ namespace T1B_3Library.Desktop.Forms
             object sender,
             EventArgs e)
         {
-            string username =
-                txtUsername.Text.Trim();
+            //Limpa erros anteriores
+            lblStatus.Text = string.Empty;
 
-            string password =
-                txtPassword.Text.Trim();
-
-
-            // ------------------------------------------------------------
-            // VALIDAÇÃO
-            // ------------------------------------------------------------
-
-            if (string.IsNullOrWhiteSpace(username) ||
-                string.IsNullOrWhiteSpace(password))
+            //Validação dos campos
+            if (string.IsNullOrWhiteSpace(txtUsername.Text))
             {
-                ShowMessage(
-                    "Preencha todos os campos obrigatórios.",
-                    Color.Red
-                );
-
+                lblStatus.Text = "⚠️ Informe seu e-mail!";
+                txtUsername.Focus();
                 return;
             }
 
-
-            // Desabilita o botão durante a requisição
-            btnSubmit.Enabled = false;
+            if (string.IsNullOrWhiteSpace(txtPassword.Text))
+            {
+                lblStatus.Text = "⚠️ Informe sua senha!";
+                txtPassword.Focus();
+                return;
+            }
+            // ===================== Estado de carregamento ======================
+            SetCarregando(true);
 
             try
             {
-                // ========================================================
-                // CADASTRO
-                // ========================================================
+                // Chamada da API
+                var (success, user, errorMessage) = await _authService.LoginAsync(
+                    txtUsername.Text.Trim(),
+                    txtPassword.Text);
 
-                if (_isRegisterMode)
+                if (success && user != null)
                 {
-                    string role =
-                        cmbRole.SelectedItem?.ToString()
-                        ?? "Reader";
+                    // Armazena os dados do usuário na sessão (Singleton)
+                    SessionManager.Instance.SetUser(user);
 
+                    // Esconde a tela de login
+                    this.Hide();
 
-                    var registerDto =
-                        new RegisterRequestDto
-                        {
-                            Email = username,
-                            Password = password,
-                            ConfirmPassword = password
-                        };
+                    //Abrir a tela principal da aplicação
+                    using var mainform = new MainForm();
+                    mainform.ShowDialog();
 
-
-                    var response =
-                        await _authApiService.RegisterAsync(
-                            registerDto
-                        );
-
-
-                    if (response != null &&
-                        response.Success)
-                    {
-                        ShowMessage(
-                            "Conta criada com sucesso! Faça login.",
-                            Color.Green
-                        );
-
-                        _isRegisterMode = false;
-
-                        UpdateModeUI();
-                    }
-                    else
-                    {
-                        ShowMessage(
-                            response?.Message
-                            ?? "Erro ao realizar cadastro.",
-                            Color.Red
-                        );
-                    }
+                    // quando o MainForm fechar. fecha o LoginForm também
+                    this.Close();
                 }
-
-                // ========================================================
-                // LOGIN
-                // ========================================================
-
                 else
                 {
-                    var loginDto =
-                        new LoginRequestDto
-                        {
-                            Email = username,
-                            Password = password
-                        };
-
-
-                    var response =
-                        await _authApiService.LoginAsync(
-                            username,
-                            password
-                        );
-
-
-                    if (response.Sucesso &&
-                        response.User != null &&
-                        !string.IsNullOrWhiteSpace(
-                            response.User.Token))
-                    {
-                        // A sessão já foi criada pelo
-                        // AuthApiService.LoginAsync()
-
-                        MainForm mainForm =
-                            new MainForm();
-
-                        mainForm.FormClosed +=
-                            MainForm_FormClosed;
-
-                        mainForm.Show();
-
-                        Hide();
-                    }
-                    else
-                    {
-                        ShowMessage(
-                            response.ErrorMessage
-                            ?? "Credenciais inválidas.",
-                            Color.Red
-                        );
-                    }
+                    lblStatus.Text = $"❌ {errorMessage}";
+                    MessageBox.Show($"❌ {errorMessage}");
                 }
+
+            }
+            catch (HttpRequestException exHttp)
+            {
+                lblStatus.Text = $"❌ Não foi possível conectar à API. \nVerifique se a API está em execução erro do sistema: {exHttp.Message}";
+                MessageBox.Show($"❌ Não foi possível conectar à API. \nVerifique se a API está em execução erro do sistema: {exHttp.Message}");
             }
             catch (Exception ex)
             {
-                ShowMessage(
-                    $"Erro de conexão:\n{ex.Message}",
-                    Color.Red
-                );
+                lblStatus.Text = $"❌ Erro inesperado: {ex.Message}";
+                MessageBox.Show($"❌ Erro inesperado: {ex.Message}");
             }
             finally
             {
-                btnSubmit.Enabled = true;
+                SetCarregando(false);
             }
+
         }
 
+        private void ExibirErro(string mensagem)
+        {
+            if (string.IsNullOrEmpty(mensagem))
+            {
+                lblStatus.Visible = false;
+                lblStatus.Text = string.Empty;
+            }
+            else
+            {
+                lblStatus.Text = mensagem;
+                lblStatus.Visible = true;
+            }
+        }
 
         // ================================================================
         // FECHAMENTO DA MAINFORM
@@ -262,7 +197,7 @@ namespace T1B_3Library.Desktop.Forms
             FormClosedEventArgs e)
         {
             // Encerra a aplicação quando a MainForm for fechada
-            Application.Exit();
+            System.Windows.Forms.Application.Exit();
         }
 
 
@@ -278,5 +213,38 @@ namespace T1B_3Library.Desktop.Forms
 
             lblStatus.Text = text;
         }
+
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+            //Guard: não executa em tempo de design
+            if (DesignMode) return;
+
+            _authService = new AuthApiService();
+
+            lblStatus.Text = $"API: {AppConfig.ApiBaseUrl}";
+
+            txtUsername.Text = "admin@t1b3library.com";
+            txtPassword.Text = "Admin@123";
+        }
+
+        private void SetCarregando(bool carregando)
+        {
+            btnSubmit.Enabled = !carregando;
+            txtUsername.Enabled = !carregando;
+            txtPassword.Enabled = !carregando;
+
+            if (carregando)
+            {
+                btnSubmit.Text = "Aguarde...";
+                lblStatus.Visible = false;
+            }
+            else
+            {
+                btnSubmit.Text = "Entrar";
+            }
+
+        }
+
+
     }
 }

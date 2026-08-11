@@ -13,17 +13,20 @@
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string ConfirmPassword { get; set; } = string.Empty;
-
-        // Campo adicionado para enviar o perfil/nível de acesso selecionado (ex: "Admin", "Reader", "Librarian")
-        public string Role { get; set; } = "Reader";
     }
 
     // DTO contendo o resultado retornado pela API após autenticação ou registro
-    public record AuthResponseDto(
-        bool Success,       // Indica se a operação deu certo (true/false)
-        string Message,     // Mensagem explicativa (ex: "Login efetuado com sucesso")
-        string? Username,   // Nome do usuário logado
-        string? Role,       // Perfil do usuário autenticado
-        string? Token       // Token JWT para autorizar as próximas chamadas HTTP
-    );
+    public class UserResponseDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public List<string> Roles { get; set; } = new();
+
+        /// <summary>
+        /// Verifica se o usuário possui a role "Admin" e retorna true ou false.
+        /// usando controle de acesso na interface
+        /// </summary>
+        public bool IsAdmin => Roles.Contains("Admin");
+    }
+
 }

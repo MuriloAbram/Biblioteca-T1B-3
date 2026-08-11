@@ -8,11 +8,32 @@ using Guna.UI2.WinForms;
 using T1B_3Library.Desktop.Helpers;
 using T1B_3Library.Desktop.DTOs;
 using T1B_3Library.Desktop.Services;
+using T1B_3Library.Application.DTOs;
 
 namespace T1B_3Library.Desktop.Forms
 {
     public partial class MainForm : Form
     {
+        //=======================================
+        // CAMPOS PRIVADOS
+        //=======================================
+
+        /// <summary>
+        /// UserControl atualmente exibido no painel de conteudo (pnlConteudo)
+        /// </summary>
+        private UserControl? _controleAtual;
+
+        /// <summary>
+        /// Botão da sidebar atualmente ativo.
+        /// </summary>
+        private Guna2Button? _botaoAtivo;
+
+        /// <summary>
+        /// Serviço de autenticação para logout.
+        /// </summary>
+        private AuthApiService _authService = null;
+
+
         /// =====================================
         /// SERVIÇOS (Inicializados no load) 
         /// =====================================
@@ -21,7 +42,7 @@ namespace T1B_3Library.Desktop.Forms
         /// =====================================
         /// Dados 
         /// =====================================
-        private List<BookDto> _todosLivros = new();
+        private List<BookResponseDto> _todosLivros = new();
 
         // Guarda o formulário secundário atualmente aberto no painel
         private Form? _activeForm = null;
@@ -37,7 +58,7 @@ namespace T1B_3Library.Desktop.Forms
             // Inicializa o serviço HTTP / API
             try
             {
-                _BookService = new BooksApiService(HttpClientHelper.Instance);
+                _BookService = new BooksApiService();
             }
             catch (Exception ex)
             {
@@ -51,7 +72,7 @@ namespace T1B_3Library.Desktop.Forms
             // Exibe as informações do usuário logado no topo
             if (SessionManager.Instance.CurrentUser != null)
             {
-                lblUserInfo.Text = $"👤 {SessionManager.Instance.CurrentUser.Username}  |  [{SessionManager.Instance.CurrentUser.Role}]";
+                lblUserInfo.Text = $"👤 {SessionManager.Instance.CurrentUser.Email}  |  [{SessionManager.Instance.CurrentUser.Roles}]";
             }
             else
             {
@@ -65,32 +86,43 @@ namespace T1B_3Library.Desktop.Forms
 
         private async Task CarregarDadosAsync()
         {
+            gridLivros.Rows.Clear();
+
             try
             {
-                // Certifique-se de que o serviço foi instanciado antes de usar
-                if (_BookService == null) return;
+                var tarefaGames = _BookService.GetAllAsync();
 
-                var livros = await _BookService.GetAllAsync();
-                gridLivros.Rows.Clear();
+                await Task.WhenAll(tarefaGames);
 
-                if (livros != null)
-                {
-                    // Converte IEnumerable<BookDto> para List<BookDto> usando .ToList()
-                    _todosLivros = livros.ToList();
+                _todosLivros = tarefaGames.Result;
 
-                    foreach (var livro in _todosLivros)
-                    {
-                        // Adiciona as colunas na mesma ordem em que foram criadas no DataGridView
-                        gridLivros.Rows.Add(livro.Id, livro.Title, livro.Author, livro.Status);
-                    }
-                }
+
+                PopularGrid(_todosLivros);
             }
             catch (Exception ex)
             {
+
                 MessageBox.Show($"Erro ao carregar livros: {ex.Message}",
                     "Erro",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
+
+            }
+        }
+
+        private void PopularGrid(List<BookResponseDto> livros)
+        {
+            gridLivros.Rows.Clear();
+
+            foreach (var l in livros)
+            {
+                gridLivros.Rows.Add(
+                    l.Id,
+                    l.Title,
+                    l.RealeaseYear,
+                    l.IsFeatured,
+                    l.CreatedAt.ToString("dd/MM/yyyy HH:mm"));
+
             }
         }
 
@@ -115,30 +147,34 @@ namespace T1B_3Library.Desktop.Forms
             gridLivros.Rows.Clear();
             foreach (var livro in livrosFiltrados)
             {
-                gridLivros.Rows.Add(livro.Id, livro.Title, livro.Author, livro.Status);
+                gridLivros.Rows.Add(livro.Id, livro.Title, livro.Author);
             }
 
         }
 
 
 
-        private void btnLogout_Click(object sender, EventArgs e)
+        private async void btnLogout_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show(
+            var resposta = MessageBox.Show(
                 "Deseja realmente sair do sistema?",
-                "Sair",
+                "Confirmar Logout",
                 MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
+                MessageBoxIcon.Question);
 
-            if (result == DialogResult.Yes)
+            if (resposta != DialogResult.Yes) return;
+
+            try
             {
-                // Encerra a sessão e retorna à tela de Login
-                SessionManager.EndSession();
-
-                LoginForm loginForm = new LoginForm();
-                loginForm.Show();
-
+                await _authService.LogoutAsync();
+            }
+            catch
+            {
+                // Mesmo se a API falhar, limpa a sessão local
+            }
+            finally
+            {
+                SessionManager.Instance.Clear();
                 this.Close();
             }
         }
@@ -158,7 +194,7 @@ namespace T1B_3Library.Desktop.Forms
                 {
                     var created = await _BookService.CreateAsync(form.BookDto);
 
-                    if (created != null)
+                    if (created.Success)
                     {
                         MessageBox.Show("✅ Livro criado com sucesso!",
                             "Sucesso",
@@ -186,35 +222,95 @@ namespace T1B_3Library.Desktop.Forms
 
         private async void btnExcluir_Click(object sender, EventArgs e)
         {
-            var u = ObterLivroSelecionado();
-            if (u == null)
+            var g = ObterLivroSelecionado();
+            if (g == null)
             {
                 MessageBox.Show("Selecione um livro para excluir.", "Aviso",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                   MessageBoxButtons.OK,
+                   MessageBoxIcon.Warning);
                 return;
             }
 
-            var conf = MessageBox.Show($"Deseja excluir o livro \"{u.Title}\"?",
+
+            var conf = MessageBox.Show($"Deseja excluir o game \"{g.Title}\"?",
                 "Confirmar Exclusão",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
 
             if (conf != DialogResult.Yes) return;
 
-            if (_BookService == null)
+            var (sucess, error) = await _BookService.DeleteAsync(g.Id);
+            if (sucess)
             {
-                MessageBox.Show("Serviço de livros não inicializado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                   "Game Excluído com sucesso!",
+                   "Sucesso",
+                  MessageBoxButtons.OK,
+                  MessageBoxIcon.Information);
+                await CarregarDadosAsync();
+            }
+            else
+            {
+                MessageBox.Show(
+                   $"{error}", "Erro",
+                  MessageBoxButtons.OK,
+                  MessageBoxIcon.Error);
+            }
+        }
+
+        private BookResponseDto? ObterLivroSelecionado()
+        {
+            if (gridLivros.SelectedRows.Count == 0) return null;
+            var row = gridLivros.SelectedRows[0];
+            var cellValue = row.Cells["colId"].Value;
+            if (cellValue == null) return null;
+
+            // Se o valor já for um int, usa diretamente
+            if (cellValue is int id)
+            {
+                return _todosLivros.FirstOrDefault(b => b.Id == id);
+            }
+
+            // Se for string ou outro, tenta converter para int
+            if (int.TryParse(cellValue.ToString(), out var parsedId))
+            {
+                return _todosLivros.FirstOrDefault(b => b.Id == parsedId);
+            }
+
+            return null;
+        }
+
+        private async void btnAtualizar_Click(object sender, EventArgs e) => await CarregarDadosAsync();
+
+        private async void btnEditar_Click(object sender, EventArgs e)
+        {
+            var livro = ObterLivroSelecionado();
+            if (livro == null)
+            {
+                MessageBox.Show("Selecione um livro para editar.",
+                    "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return;
             }
 
-            try
+            if (_BookService == null)
             {
-                // Desestrutura a tupla retornada por DeleteAsync
-                var (success, error) = await _BookService.DeleteAsync(u.Id);
+                MessageBox.Show("Serviço de livros não inicializado.",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
+            // Usa o construtor existente do BookFormDialog (title, author, category, year, quantity)
+            using var form = new BookFormDialog(livro.Title, livro.Author, string.Empty, livro.RealeaseYear, 0);
+            if (form.ShowDialog() == DialogResult.OK && form.BookUpdateDto != null)
+            {
+                var (success, _, error) = await _BookService.UpdateAsync(livro.Id, form.BookUpdateDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Livro excluído com sucesso!",
+                    MessageBox.Show("✅ Livro atualizado com sucesso!",
                         "Sucesso",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -228,94 +324,27 @@ namespace T1B_3Library.Desktop.Forms
                         MessageBoxIcon.Error);
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao excluir livro: {ex.Message}",
-                    "Erro",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
         }
 
-        private BookDto? ObterLivroSelecionado()
+        private void txtPesquisa_TextChanged_1(object sender, EventArgs e) => FiltrarLivros();
+
+        private void FiltrarLivros()
         {
-            if (gridLivros.SelectedRows.Count == 0)
-                return null;
-
-            var row = gridLivros.SelectedRows[0];
-            var idValue = row.Cells["colId"].Value;
-            if (idValue == null)
-                return null;
-
-            // Se o valor já for um Guid, usa diretamente.
-            if (idValue is Guid guidValue)
+            var termo = txtPesquisa.Text.Trim().ToLower();
+            if (string.IsNullOrEmpty(termo))
             {
-                return _todosLivros.FirstOrDefault(u => u.Id == guidValue);
-            }
-
-            // Caso venha como string (mais comum), tenta converter.
-            if (Guid.TryParse(idValue.ToString(), out var parsedGuid))
-            {
-                return _todosLivros.FirstOrDefault(u => u.Id == parsedGuid);
-            }
-
-            // Não foi possível interpretar o ID
-            return null;
-        }
-
-        private async void btnAtualizar_Click(object sender, EventArgs e) => await CarregarDadosAsync();
-
-        private async void btnEditar_Click(object sender, EventArgs e)
-        {
-            var livro = ObterLivroSelecionado();
-            if (livro == null)
-            {
-                MessageBox.Show("Selecione um Livro para editar.",
-                    "Aviso",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                PopularGrid(_todosLivros);
                 return;
             }
 
-            // Abre o formulário de edição preenchendo os campos conhecidos.
-            // Como BookFormDialog tem um construtor com campos individuais,
-            // passamos valores mínimos quando não existirem (categoria/ano/qt).
-            using var form = new BookFormDialog(livro.Title, livro.Author, string.Empty, 0, 0);
-            if (form.ShowDialog() == DialogResult.OK && form.BookUpdateDto != null)
-            {
-                if (_BookService == null)
-                {
-                    MessageBox.Show("Serviço de livros não inicializado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+            var filtrados = _todosLivros
+                .Where(g => g.Title.Contains(termo, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-                try
-                {
-                    var success = await _BookService.UpdateAsync(livro.Id, form.BookUpdateDto);
-                    if (success)
-                    {
-                        MessageBox.Show("✅ Livro atualizado com sucesso!",
-                            "Sucesso",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                        await CarregarDadosAsync();
-                    }
-                    else
-                    {
-                        MessageBox.Show("❌ Falha ao atualizar livro.",
-                        "Erro",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Erro ao atualizar livro: {ex.Message}",
-                        "Erro",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-            }
+            PopularGrid(filtrados);
+
         }
+
+        private void txtPesquisa_KeyUp(object sender, KeyEventArgs e) => FiltrarLivros();
     }
 }

@@ -6,90 +6,81 @@ namespace T1B_3Library.Desktop.Helpers
     /// <summary>
     /// Gerencia os dados do usuário autenticado durante a execução da aplicação.
     /// </summary>
-    public static class SessionManager
-    {
-        // ================================================================
-        // SUPORTE PARA ACESSO VIA SessionManager.Instance
-        // ================================================================
-        public static class Instance
+
+    public sealed class SessionManager
         {
-            public static AuthResponseDto? CurrentUser => SessionManager.CurrentUser;
-            public static string? Token => SessionManager.Token;
-            public static bool IsLoggedIn => SessionManager.IsLoggedIn;
-            public static bool IsAuthenticated => SessionManager.IsAuthenticated;
+            // Instância única (lazy initialization)
+            private static readonly Lazy<SessionManager> _instance =
+                new(() => new SessionManager());
 
-            // Adicionado suporte ao IsAdmin via Instance
-            public static bool IsAdmin => SessionManager.IsAdmin;
+            ///<summary>
+            ///Ponto de acesso global à instância única do SessionManager
+            ///Uso: SessionManager.Instance.CurrentUser
+            /// </summary>
+            public static SessionManager Instance => _instance.Value;
 
-            public static void StartSession(AuthResponseDto user, string token)
-                => SessionManager.StartSession(user, token);
+            // Construtor privado: impede a criação de novas instâncias de fora
+            private SessionManager() { }
 
-            public static void EndSession() => SessionManager.EndSession();
-            public static void ClearSession() => SessionManager.ClearSession();
-            public static void Logout() => SessionManager.Logout();
-        }
+            //===============================================
+            // DADOS DA SESSÃO
+            //===============================================
 
-        // ================================================================
-        // USUÁRIO ATUAL
-        // ================================================================
-        public static AuthResponseDto? CurrentUser { get; private set; }
+            ///<summary>
+            ///Dados do usuário atualmente autenticado
+            ///é null quando nenhum usuário está logado
+            /// </summary>
+            public UserResponseDto? CurrentUser { get; private set; }
 
-        // ================================================================
-        // TOKEN JWT
-        // ================================================================
-        public static string? Token { get; private set; }
+            ///<summary>
+            ///indica se tem algum usuário autenticado na sessão
+            ///</summary>
+            public bool IsAuthencticated => CurrentUser != null;
 
-        // ================================================================
-        // ESTADO DA SESSÃO E PERMISSÕES
-        // ================================================================
-        public static bool IsLoggedIn => CurrentUser != null && !string.IsNullOrWhiteSpace(Token);
+            ///<summary>
+            ///indica se o usuário autenticado é um Administrador.
+            ///usado para controlar acesso a módulos restritos
+            ///</summary>
+            public bool IsAdmin => CurrentUser?.IsAdmin ?? false;
 
-        public static bool IsAuthenticated => IsLoggedIn;
-
-        /// <summary>
-        /// Verifica se o usuário atual possui a Role / Perfil de Administrador.
-        /// (Ajuste a palavra "Admin" caso sua API use "ADMINISTRATOR" ou outro valor)
-        /// </summary>
-        public static bool IsAdmin => CurrentUser != null &&
-            (CurrentUser.Role?.Equals("Admin", StringComparison.OrdinalIgnoreCase) == true ||
-             CurrentUser.Role?.Equals("Administrador", StringComparison.OrdinalIgnoreCase) == true);
-
-        // ================================================================
-        // INICIAR SESSÃO
-        // ================================================================
-        public static void StartSession(AuthResponseDto user, string token)
-        {
-            if (user == null)
+            ///<summary>
+            /// Define o usuário autenticado na sessão
+            /// Chamado após o login bem-sucediso na API.
+            /// <param name="user">Dados do usuário retornados pela API</param>
+            /// </summary>
+            public void SetUser(UserResponseDto user)
             {
-                throw new ArgumentNullException(
-                    nameof(user),
-                    "Os dados do usuário não podem ser nulos."
-                );
+                CurrentUser = user;
             }
 
-            if (string.IsNullOrWhiteSpace(token))
+            ///<summary>
+            /// Limpa os dados da sessão (logout)
+            /// Após este método, IsAutenticated retorna false
+            ///</summary>   
+            public void Clear()
             {
-                throw new ArgumentException(
-                    "O token JWT não pode ser vazio.",
-                    nameof(token)
-                );
+                CurrentUser = null;
             }
 
-            CurrentUser = user;
-            Token = token;
+            ///<summary>
+            ///Retorna o e-mail do usuário atual de forma segura
+            ///Retorna string vazia se não houver usuário autenticado.
+            /// </summary>
+            public string GetEmail() => CurrentUser?.Email ?? string.Empty;
+
+            ///<summary>
+            ///Retorna o nome de exibição do usuário (parte antes do @).
+            ///Exemplo: "luan.costa@senac.com" > luan.costa
+            ///</summary>
+            public string GetDisplayName()
+            {
+                var email = GetEmail();
+                if (string.IsNullOrEmpty(email)) return "Usuário";
+
+                // captura o que vem antes do @
+                var at = email.IndexOf("@");
+                // se houver ao menos 1 caractere antes do @ retorna o nome do usuário
+                return at > 0 ? email[..at] : email; //
+            }
         }
-
-        // ================================================================
-        // ENCERRAR SESSÃO / CLEAR / LOGOUT
-        // ================================================================
-        public static void EndSession()
-        {
-            CurrentUser = null;
-            Token = null;
-        }
-
-        public static void ClearSession() => EndSession();
-
-        public static void Logout() => EndSession();
     }
-}

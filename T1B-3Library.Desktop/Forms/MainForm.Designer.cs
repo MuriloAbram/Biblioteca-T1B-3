@@ -296,6 +296,8 @@
             txtPesquisa.ShadowDecoration.CustomizableEdges = customizableEdges20;
             txtPesquisa.Size = new Size(231, 36);
             txtPesquisa.TabIndex = 1;
+            txtPesquisa.TextChanged += txtPesquisa_TextChanged_1;
+            txtPesquisa.KeyUp += txtPesquisa_KeyUp;
             // 
             // btnNovo
             // 
