@@ -1,122 +1,151 @@
-﻿using System; // Recursos básicos do C#
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq; // <-- Adicionado para usar o .ToList()
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Guna.UI2.WinForms;
+using T1B_3Library.Desktop.Helpers;
+using T1B_3Library.Desktop.DTOs;
+using T1B_3Library.Desktop.Services;
 
-using System.Drawing; // Trabalha com elementos gráficos e posições
-
-using System.Windows.Forms; // Recursos do Windows Forms
-
-using Guna.UI2.WinForms; // Componentes visuais da biblioteca Guna
-
-using T1B_3Library.Desktop.Helpers; // Importa os Helpers da aplicação
-
-
-namespace T1B_3Library.Desktop.Forms // Define o namespace dos formulários
+namespace T1B_3Library.Desktop.Forms
 {
-    public partial class MainForm : Form // Cria o formulário principal
+    public partial class MainForm : Form
     {
-        private Form? _activeForm = null; // Guarda o formulário secundário atualmente aberto
+        /// =====================================
+        /// SERVIÇOS (Inicializados no load) 
+        /// =====================================
+        private BooksApiService? _BookService = null;
 
+        /// =====================================
+        /// Dados 
+        /// =====================================
+        private List<BookDto> _todosLivros = new();
 
-        public MainForm() // Construtor do formulário principal
+        // Guarda o formulário secundário atualmente aberto no painel
+        private Form? _activeForm = null;
+
+        public MainForm()
         {
-            InitializeComponent(); // Inicializa os componentes da tela
+            InitializeComponent();
         }
 
-
-        private void MainForm_Load(object sender, EventArgs e) // Executa quando o formulário é carregado
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            if (SessionManager.CurrentUser != null) // Verifica se existe um usuário conectado
+            // Exibe as informações do usuário logado no topo
+            if (SessionManager.Instance.CurrentUser != null)
             {
-                lblUserInfo.Text = $"👤 {SessionManager.CurrentUser.Username}  |  [{SessionManager.CurrentUser.Role}]"; // Mostra usuário e perfil
+                lblUserInfo.Text = $"👤 {SessionManager.Instance.CurrentUser.Username}  |  [{SessionManager.Instance.CurrentUser.Role}]";
             }
-            else // Executa caso não exista usuário conectado
+            else
             {
-                lblUserInfo.Text = "👤 Usuário Conectado"; // Mostra uma mensagem padrão
+                lblUserInfo.Text = "👤 Usuário Conectado";
             }
         }
 
-
-        // Abre um Form secundário dentro do painel principal (pnlContent)
-        private void OpenChildForm(Form childForm, string title) // Abre um formulário dentro do painel
+        private async Task CarregarDadosAsync()
         {
-            if (_activeForm != null) // Verifica se já existe um formulário aberto
+            try
             {
-                _activeForm.Close(); // Fecha o formulário anterior
-            }
+                // Certifique-se de que o serviço foi instanciado antes de usar
+                if (_BookService == null) return;
 
-            _activeForm = childForm; // Define o novo formulário como ativo
+                var livros = await _BookService.GetAllAsync();
+                gridLivros.Rows.Clear();
 
-            lblTitle.Text = title; // Altera o título da tela
-
-
-            childForm.TopLevel = false; // Define o formulário como secundário
-
-            childForm.FormBorderStyle = FormBorderStyle.None; // Remove a borda do formulário
-
-            childForm.Dock = DockStyle.Fill; // Faz o formulário ocupar todo o painel
-
-
-            pnlContent.Controls.Add(childForm); // Adiciona o formulário ao painel
-
-            pnlContent.Tag = childForm; // Armazena o formulário na propriedade Tag
-
-            childForm.BringToFront(); // Coloca o formulário na frente dos outros controles
-
-            childForm.Show(); // Exibe o formulário
-        }
-
-
-        private void btnNav_Click(object sender, EventArgs e) // Evento dos botões de navegação
-        {
-            if (sender is Guna2Button btn) // Verifica se quem chamou o evento é um botão Guna
-            {
-                switch (btn.Name) // Identifica qual botão foi clicado
+                if (livros != null)
                 {
-                    case "btnDashboard": // Executa quando o Dashboard é selecionado
-                        lblTitle.Text = "Dashboard"; // Define o título como Dashboard
+                    // Converte IEnumerable<BookDto> para List<BookDto> usando .ToList()
+                    _todosLivros = livros.ToList();
 
-                        if (_activeForm != null) // Verifica se existe um formulário aberto
-                        {
-                            _activeForm.Close(); // Fecha o formulário atual
-
-                            _activeForm = null; // Remove a referência do formulário ativo
-                        }
-                        break; // Encerra este caso
-
-
-                    case "btnLivros": // Executa quando o botão Livros é selecionado
-                        // Exemplo: Substitua pelo nome real do seu Form de livros
-                        // OpenChildForm(new LivrosForm(), "Gerenciamento de Livros");
-                        break; // Encerra este caso
-
-
-                    case "btnCategorias": // Executa quando o botão Categorias é selecionado
-                        // Exemplo: Substitua pelo nome real do seu Form de categorias
-                        // OpenChildForm(new CategoriasForm(), "Gerenciamento de Categorias");
-                        break; // Encerra este caso
+                    foreach (var livro in _todosLivros)
+                    {
+                        // Adiciona as colunas na mesma ordem em que foram criadas no DataGridView
+                        gridLivros.Rows.Add(livro.Id, livro.Title, livro.Author, livro.Status);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar livros: {ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        }
+
+        private void ConfigurarPermissões()
+        {
+            //Verifica se o usuário logado é administrador
+            bool isAdmin = SessionManager.Instance.IsAdmin;
+            //Se não for admin, desabilita os botões de gerenciamento
+            btnNovo.Enabled = isAdmin;
+
+            btnExcluir.Enabled = isAdmin;
+        }
+
+        private void txtPesquisa_TextChanged(object sender, EventArgs e) => FiltrarLivros(txtPesquisa.Text);
+
+        private void FiltrarLivros(string filtro)
+        {
+            var livrosFiltrados = _todosLivros
+                .Where(l => l.Title.Contains(filtro, StringComparison.OrdinalIgnoreCase) ||
+                            l.Author.Contains(filtro, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            gridLivros.Rows.Clear();
+            foreach (var livro in livrosFiltrados)
+            {
+                gridLivros.Rows.Add(livro.Id, livro.Title, livro.Author, livro.Status);
+            }
+
         }
 
 
-        private void btnLogout_Click(object sender, EventArgs e) // Evento do botão de sair
+
+        private void btnLogout_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show( // Exibe uma confirmação para o usuário
-                "Deseja realmente sair do sistema?", // Mensagem exibida
-                "Sair", // Título da janela
-                MessageBoxButtons.YesNo, // Mostra os botões Sim e Não
-                MessageBoxIcon.Question // Define o ícone de pergunta
+            DialogResult result = MessageBox.Show(
+                "Deseja realmente sair do sistema?",
+                "Sair",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
             );
 
-
-            if (result == DialogResult.Yes) // Verifica se o usuário confirmou a saída
+            if (result == DialogResult.Yes)
             {
-                SessionManager.EndSession(); // Encerra a sessão do usuário
+                // Encerra a sessão e retorna à tela de Login
+                SessionManager.EndSession();
 
-                LoginForm loginForm = new LoginForm(); // Cria uma nova tela de Login
+                LoginForm loginForm = new LoginForm();
+                loginForm.Show();
 
-                loginForm.Show(); // Exibe a tela de Login
+                this.Close();
+            }
+        }
 
-                this.Close(); // Fecha o formulário principal
+        private async void btnNovo_Click(object sender, EventArgs e)
+        {
+            using var form = new BookFormDialog();
+            if (form.ShowDialog() == DialogResult.OK && form.BookDto != null)
+            {
+                var (success, _, error) = await _BookService.CreateAsync(form.BookDto);
+                if (success)
+                {
+                    MessageBox.Show("✅ Usuário criado com sucesso!",
+                        "Sucesso",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    await CarregarDadosAsync();
+                }
+                else
+                {
+                    MessageBox.Show($"❌ {error}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                }
             }
         }
     }

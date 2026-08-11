@@ -1,31 +1,95 @@
-﻿using T1B_3Library.Desktop.DTOs; // Importa as estruturas de dados (DTOs)
+﻿using System;
+using T1B_3Library.Desktop.DTOs;
 
 namespace T1B_3Library.Desktop.Helpers
 {
-    // Classe estática responsável por manter os dados do usuário autenticado enquanto a aplicação estiver aberta
+    /// <summary>
+    /// Gerencia os dados do usuário autenticado durante a execução da aplicação.
+    /// </summary>
     public static class SessionManager
     {
-        // Propriedade que armazena as informações do usuário atual (Nome, Perfil, etc.)
+        // ================================================================
+        // SUPORTE PARA ACESSO VIA SessionManager.Instance
+        // ================================================================
+        public static class Instance
+        {
+            public static AuthResponseDto? CurrentUser => SessionManager.CurrentUser;
+            public static string? Token => SessionManager.Token;
+            public static bool IsLoggedIn => SessionManager.IsLoggedIn;
+            public static bool IsAuthenticated => SessionManager.IsAuthenticated;
+
+            // Adicionado suporte ao IsAdmin via Instance
+            public static bool IsAdmin => SessionManager.IsAdmin;
+
+            public static void StartSession(AuthResponseDto user, string token)
+                => SessionManager.StartSession(user, token);
+
+            public static void EndSession() => SessionManager.EndSession();
+            public static void ClearSession() => SessionManager.ClearSession();
+            public static void Logout() => SessionManager.Logout();
+        }
+
+        // ================================================================
+        // USUÁRIO ATUAL
+        // ================================================================
         public static AuthResponseDto? CurrentUser { get; private set; }
 
-        // Propriedade que armazena o Token JWT para autorização nas chamadas HTTP
+        // ================================================================
+        // TOKEN JWT
+        // ================================================================
         public static string? Token { get; private set; }
 
-        // Propriedade booleana que verifica rapidamente se existe um usuário logado na sessão
-        public static bool IsLoggedIn => CurrentUser != null && !string.IsNullOrEmpty(Token);
+        // ================================================================
+        // ESTADO DA SESSÃO E PERMISSÕES
+        // ================================================================
+        public static bool IsLoggedIn => CurrentUser != null && !string.IsNullOrWhiteSpace(Token);
 
-        // Método chamado no Login bem-sucedido para registrar a sessão ativa
+        public static bool IsAuthenticated => IsLoggedIn;
+
+        /// <summary>
+        /// Verifica se o usuário atual possui a Role / Perfil de Administrador.
+        /// (Ajuste a palavra "Admin" caso sua API use "ADMINISTRATOR" ou outro valor)
+        /// </summary>
+        public static bool IsAdmin => CurrentUser != null &&
+            (CurrentUser.Role?.Equals("Admin", StringComparison.OrdinalIgnoreCase) == true ||
+             CurrentUser.Role?.Equals("Administrador", StringComparison.OrdinalIgnoreCase) == true);
+
+        // ================================================================
+        // INICIAR SESSÃO
+        // ================================================================
         public static void StartSession(AuthResponseDto user, string token)
         {
-            CurrentUser = user; // Guarda a resposta do login
-            Token = token; // Guarda o token JWT
+            if (user == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(user),
+                    "Os dados do usuário não podem ser nulos."
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentException(
+                    "O token JWT não pode ser vazio.",
+                    nameof(token)
+                );
+            }
+
+            CurrentUser = user;
+            Token = token;
         }
 
-        // Método chamado no Logout para limpar os dados da memória
+        // ================================================================
+        // ENCERRAR SESSÃO / CLEAR / LOGOUT
+        // ================================================================
         public static void EndSession()
         {
-            CurrentUser = null; // Zera as informações do usuário
-            Token = null; // Zera o token JWT
+            CurrentUser = null;
+            Token = null;
         }
+
+        public static void ClearSession() => EndSession();
+
+        public static void Logout() => EndSession();
     }
 }

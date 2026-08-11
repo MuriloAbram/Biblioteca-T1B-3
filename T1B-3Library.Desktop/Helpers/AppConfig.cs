@@ -1,27 +1,113 @@
-﻿using System.IO; 
-using Microsoft.Extensions.Configuration; 
+﻿using System;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace T1B_3Library.Desktop.Helpers
 {
-    // Classe estática responsável por carregar e disponibilizar as configurações do appsettings.json
+    /// <summary>
+    /// Classe responsável por carregar as configurações
+    /// do arquivo appsettings.json.
+    /// </summary>
     public static class AppConfig
     {
-        // Instância privada da interface de configuração do .NET
+        // Instância da configuração
         private static readonly IConfigurationRoot _configuration;
 
-        // Construtor estático executado automaticamente na primeira vez que a classe for acessada
+        // ================================================================
+        // CONSTRUTOR
+        // ================================================================
+
         static AppConfig()
         {
-            // Cria o leitor de configurações apontando para a pasta onde o executável está rodando
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // Define o diretório base do aplicativo
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true); // Adiciona o arquivo appsettings.json
+            // Diretório onde o executável está sendo executado
+            string basePath = AppContext.BaseDirectory;
 
-            // Constrói a árvore de configurações
+            // Cria o leitor de configuração
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(basePath)
+                .AddJsonFile(
+                    "appsettings.json",
+                    optional: true,
+                    reloadOnChange: true
+                );
+
+            // Constrói a configuração
             _configuration = builder.Build();
         }
 
-        // Propriedade que lê a URL base da API (retorna valor padrão caso não encontre no arquivo JSON)
-        public static string ApiBaseUrl => _configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7123/api/";
+        // ================================================================
+        // URL DA API
+        // ================================================================
+
+        /// <summary>
+        /// URL base da API.
+        /// </summary>
+        public static string ApiBaseUrl
+        {
+            get
+            {
+                string url =
+                    _configuration["ApiSettings:BaseUrl"]
+                    ?? "https://localhost:7123/api/";
+
+                url = url.Trim();
+
+                // Garante que termine com /
+                if (!url.EndsWith("/"))
+                {
+                    url += "/";
+                }
+
+                return url;
+            }
+        }
+
+        // ================================================================
+        // TIMEOUT
+        // ================================================================
+
+        /// <summary>
+        /// Tempo máximo das requisições HTTP em segundos.
+        /// Valor padrão: 30 segundos.
+        /// </summary>
+        public static int Timeout
+        {
+            get
+            {
+                // Lê o valor diretamente como string,
+                // evitando a necessidade do Configuration.Binder.
+                string? timeoutValue =
+                    _configuration["ApiSettings:Timeout"];
+
+                // Tenta converter para inteiro
+                if (int.TryParse(timeoutValue, out int timeout))
+                {
+                    // Impede valores menores ou iguais a zero
+                    if (timeout > 0)
+                    {
+                        return timeout;
+                    }
+                }
+
+                // Valor padrão
+                return 30;
+            }
+        }
+
+        // ================================================================
+        // MÉTODO AUXILIAR
+        // ================================================================
+
+        /// <summary>
+        /// Obtém qualquer configuração do appsettings.json.
+        ///
+        /// Exemplo:
+        /// AppConfig.GetValue("ApiSettings:BaseUrl");
+        /// </summary>
+        public static string? GetValue(string key)
+        {
+            return _configuration[key];
+        }
     }
 }
+

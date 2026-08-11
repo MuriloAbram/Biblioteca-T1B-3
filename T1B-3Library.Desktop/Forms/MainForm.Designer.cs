@@ -18,35 +18,36 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges7 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges8 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges1 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges2 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges9 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges10 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges1 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges2 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges7 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges8 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges22 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges27 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges28 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges19 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges22 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges23 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges24 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges25 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges26 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             pnlSidebar = new Guna.UI2.WinForms.Guna2Panel();
             pnlNavContainer = new Guna.UI2.WinForms.Guna2Panel();
-            btnCategorias = new Guna.UI2.WinForms.Guna2Button();
-            btnLivros = new Guna.UI2.WinForms.Guna2Button();
-            btnDashboard = new Guna.UI2.WinForms.Guna2Button();
             pnlBottom = new Guna.UI2.WinForms.Guna2Panel();
             btnLogout = new Guna.UI2.WinForms.Guna2Button();
             pnlLogo = new Guna.UI2.WinForms.Guna2Panel();
@@ -57,13 +58,28 @@
             lblUserInfo = new Label();
             lblTitle = new Label();
             pnlContent = new Guna.UI2.WinForms.Guna2Panel();
+            panel1 = new Panel();
+            btnEditar = new Guna.UI2.WinForms.Guna2Button();
+            txtPesquisa = new Guna.UI2.WinForms.Guna2TextBox();
+            btnNovo = new Guna.UI2.WinForms.Guna2Button();
+            btnAtualizar = new Guna.UI2.WinForms.Guna2Button();
+            btnExcluir = new Guna.UI2.WinForms.Guna2Button();
+            lblInfo = new Label();
+            gridLivros = new DataGridView();
+            colId = new DataGridViewTextBoxColumn();
+            colTitle = new DataGridViewTextBoxColumn();
+            colAuthor = new DataGridViewTextBoxColumn();
+            colStatus = new DataGridViewCheckBoxColumn();
+            lblTitulo = new Label();
             dragControl = new Guna.UI2.WinForms.Guna2DragControl(components);
             borderForm = new Guna.UI2.WinForms.Guna2BorderlessForm(components);
             pnlSidebar.SuspendLayout();
-            pnlNavContainer.SuspendLayout();
             pnlBottom.SuspendLayout();
             pnlLogo.SuspendLayout();
             pnlHeader.SuspendLayout();
+            pnlContent.SuspendLayout();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)gridLivros).BeginInit();
             SuspendLayout();
             // 
             // pnlSidebar
@@ -71,87 +87,44 @@
             pnlSidebar.Controls.Add(pnlNavContainer);
             pnlSidebar.Controls.Add(pnlBottom);
             pnlSidebar.Controls.Add(pnlLogo);
-            pnlSidebar.CustomizableEdges = customizableEdges15;
+            pnlSidebar.CustomizableEdges = customizableEdges9;
             pnlSidebar.Dock = DockStyle.Left;
             pnlSidebar.FillColor = Color.FromArgb(24, 30, 54);
             pnlSidebar.Location = new Point(0, 0);
             pnlSidebar.Name = "pnlSidebar";
-            pnlSidebar.ShadowDecoration.CustomizableEdges = customizableEdges16;
+            pnlSidebar.ShadowDecoration.CustomizableEdges = customizableEdges10;
             pnlSidebar.Size = new Size(230, 650);
             pnlSidebar.TabIndex = 0;
             // 
             // pnlNavContainer
             // 
             pnlNavContainer.BackColor = Color.Transparent;
-            pnlNavContainer.Controls.Add(btnCategorias);
-            pnlNavContainer.Controls.Add(btnLivros);
-            pnlNavContainer.Controls.Add(btnDashboard);
-            pnlNavContainer.CustomizableEdges = customizableEdges7;
+            pnlNavContainer.CustomizableEdges = customizableEdges1;
             pnlNavContainer.Dock = DockStyle.Fill;
             pnlNavContainer.Location = new Point(0, 80);
             pnlNavContainer.Name = "pnlNavContainer";
             pnlNavContainer.Padding = new Padding(12, 10, 12, 10);
-            pnlNavContainer.ShadowDecoration.CustomizableEdges = customizableEdges8;
+            pnlNavContainer.ShadowDecoration.CustomizableEdges = customizableEdges2;
             pnlNavContainer.Size = new Size(230, 490);
             pnlNavContainer.TabIndex = 1;
-            // 
-            // btnCategorias
-            // 
-            btnCategorias.BorderRadius = 8;
-            btnCategorias.CustomizableEdges = customizableEdges1;
-            btnCategorias.Font = new Font("Segoe UI", 9F);
-            btnCategorias.ForeColor = Color.White;
-            btnCategorias.Location = new Point(0, 123);
-            btnCategorias.Name = "btnCategorias";
-            btnCategorias.ShadowDecoration.CustomizableEdges = customizableEdges2;
-            btnCategorias.Size = new Size(230, 73);
-            btnCategorias.TabIndex = 0;
-            btnCategorias.Text = "Categorias";
-            // 
-            // btnLivros
-            // 
-            btnLivros.BorderRadius = 8;
-            btnLivros.CustomizableEdges = customizableEdges3;
-            btnLivros.Font = new Font("Segoe UI", 9F);
-            btnLivros.ForeColor = Color.White;
-            btnLivros.Location = new Point(0, 250);
-            btnLivros.Name = "btnLivros";
-            btnLivros.ShadowDecoration.CustomizableEdges = customizableEdges4;
-            btnLivros.Size = new Size(230, 73);
-            btnLivros.TabIndex = 1;
-            btnLivros.Text = "Livros";
-            // 
-            // btnDashboard
-            // 
-            btnDashboard.BorderRadius = 8;
-            btnDashboard.Checked = true;
-            btnDashboard.CustomizableEdges = customizableEdges5;
-            btnDashboard.Font = new Font("Segoe UI", 9F);
-            btnDashboard.ForeColor = Color.White;
-            btnDashboard.Location = new Point(0, 0);
-            btnDashboard.Name = "btnDashboard";
-            btnDashboard.ShadowDecoration.CustomizableEdges = customizableEdges6;
-            btnDashboard.Size = new Size(230, 73);
-            btnDashboard.TabIndex = 2;
-            btnDashboard.Text = "Dashboard";
             // 
             // pnlBottom
             // 
             pnlBottom.BackColor = Color.Transparent;
             pnlBottom.Controls.Add(btnLogout);
-            pnlBottom.CustomizableEdges = customizableEdges11;
+            pnlBottom.CustomizableEdges = customizableEdges5;
             pnlBottom.Dock = DockStyle.Bottom;
             pnlBottom.Location = new Point(0, 570);
             pnlBottom.Name = "pnlBottom";
             pnlBottom.Padding = new Padding(12);
-            pnlBottom.ShadowDecoration.CustomizableEdges = customizableEdges12;
+            pnlBottom.ShadowDecoration.CustomizableEdges = customizableEdges6;
             pnlBottom.Size = new Size(230, 80);
             pnlBottom.TabIndex = 2;
             // 
             // btnLogout
             // 
             btnLogout.BorderRadius = 8;
-            btnLogout.CustomizableEdges = customizableEdges9;
+            btnLogout.CustomizableEdges = customizableEdges3;
             btnLogout.Dock = DockStyle.Bottom;
             btnLogout.FillColor = Color.FromArgb(255, 82, 82);
             btnLogout.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
@@ -159,7 +132,7 @@
             btnLogout.HoverState.FillColor = Color.FromArgb(214, 48, 49);
             btnLogout.Location = new Point(12, 15);
             btnLogout.Name = "btnLogout";
-            btnLogout.ShadowDecoration.CustomizableEdges = customizableEdges10;
+            btnLogout.ShadowDecoration.CustomizableEdges = customizableEdges4;
             btnLogout.Size = new Size(206, 53);
             btnLogout.TabIndex = 0;
             btnLogout.Text = "🚪   Sair";
@@ -171,11 +144,11 @@
             // 
             pnlLogo.BackColor = Color.Transparent;
             pnlLogo.Controls.Add(lblLogo);
-            pnlLogo.CustomizableEdges = customizableEdges13;
+            pnlLogo.CustomizableEdges = customizableEdges7;
             pnlLogo.Dock = DockStyle.Top;
             pnlLogo.Location = new Point(0, 0);
             pnlLogo.Name = "pnlLogo";
-            pnlLogo.ShadowDecoration.CustomizableEdges = customizableEdges14;
+            pnlLogo.ShadowDecoration.CustomizableEdges = customizableEdges8;
             pnlLogo.Size = new Size(230, 80);
             pnlLogo.TabIndex = 0;
             // 
@@ -197,12 +170,12 @@
             pnlHeader.Controls.Add(btnClose);
             pnlHeader.Controls.Add(lblUserInfo);
             pnlHeader.Controls.Add(lblTitle);
-            pnlHeader.CustomizableEdges = customizableEdges21;
+            pnlHeader.CustomizableEdges = customizableEdges15;
             pnlHeader.Dock = DockStyle.Top;
             pnlHeader.FillColor = Color.FromArgb(37, 42, 64);
             pnlHeader.Location = new Point(230, 0);
             pnlHeader.Name = "pnlHeader";
-            pnlHeader.ShadowDecoration.CustomizableEdges = customizableEdges22;
+            pnlHeader.ShadowDecoration.CustomizableEdges = customizableEdges16;
             pnlHeader.Size = new Size(820, 65);
             pnlHeader.TabIndex = 1;
             // 
@@ -211,12 +184,12 @@
             btnMinimize.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnMinimize.BackColor = Color.Transparent;
             btnMinimize.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox;
-            btnMinimize.CustomizableEdges = customizableEdges17;
+            btnMinimize.CustomizableEdges = customizableEdges11;
             btnMinimize.FillColor = Color.Transparent;
             btnMinimize.IconColor = Color.White;
             btnMinimize.Location = new Point(735, 12);
             btnMinimize.Name = "btnMinimize";
-            btnMinimize.ShadowDecoration.CustomizableEdges = customizableEdges18;
+            btnMinimize.ShadowDecoration.CustomizableEdges = customizableEdges12;
             btnMinimize.Size = new Size(35, 30);
             btnMinimize.TabIndex = 1;
             // 
@@ -224,12 +197,12 @@
             // 
             btnClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnClose.BackColor = Color.Transparent;
-            btnClose.CustomizableEdges = customizableEdges19;
+            btnClose.CustomizableEdges = customizableEdges13;
             btnClose.FillColor = Color.Transparent;
             btnClose.IconColor = Color.White;
             btnClose.Location = new Point(775, 12);
             btnClose.Name = "btnClose";
-            btnClose.ShadowDecoration.CustomizableEdges = customizableEdges20;
+            btnClose.ShadowDecoration.CustomizableEdges = customizableEdges14;
             btnClose.Size = new Size(35, 30);
             btnClose.TabIndex = 0;
             // 
@@ -253,20 +226,182 @@
             lblTitle.ForeColor = Color.White;
             lblTitle.Location = new Point(25, 18);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(119, 30);
+            lblTitle.Size = new Size(107, 30);
             lblTitle.TabIndex = 3;
-            lblTitle.Text = "Dashboard";
+            lblTitle.Text = "📖 Livros";
             // 
             // pnlContent
             // 
-            pnlContent.CustomizableEdges = customizableEdges23;
+            pnlContent.Controls.Add(panel1);
+            pnlContent.Controls.Add(lblInfo);
+            pnlContent.Controls.Add(gridLivros);
+            pnlContent.Controls.Add(lblTitulo);
+            pnlContent.CustomizableEdges = customizableEdges27;
             pnlContent.Dock = DockStyle.Fill;
             pnlContent.FillColor = Color.FromArgb(46, 51, 73);
             pnlContent.Location = new Point(230, 65);
             pnlContent.Name = "pnlContent";
-            pnlContent.ShadowDecoration.CustomizableEdges = customizableEdges24;
+            pnlContent.ShadowDecoration.CustomizableEdges = customizableEdges28;
             pnlContent.Size = new Size(820, 585);
             pnlContent.TabIndex = 2;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(btnEditar);
+            panel1.Controls.Add(txtPesquisa);
+            panel1.Controls.Add(btnNovo);
+            panel1.Controls.Add(btnAtualizar);
+            panel1.Controls.Add(btnExcluir);
+            panel1.Location = new Point(62, 125);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(673, 42);
+            panel1.TabIndex = 18;
+            // 
+            // btnEditar
+            // 
+            btnEditar.BorderRadius = 7;
+            btnEditar.CustomizableEdges = customizableEdges17;
+            btnEditar.DisabledState.BorderColor = Color.DarkGray;
+            btnEditar.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnEditar.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnEditar.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnEditar.FillColor = Color.FromArgb(0, 77, 147);
+            btnEditar.Font = new Font("Segoe UI", 9F);
+            btnEditar.ForeColor = Color.White;
+            btnEditar.Location = new Point(391, 3);
+            btnEditar.Name = "btnEditar";
+            btnEditar.ShadowDecoration.CustomizableEdges = customizableEdges18;
+            btnEditar.Size = new Size(79, 33);
+            btnEditar.TabIndex = 11;
+            btnEditar.Text = "✏Editar";
+            // 
+            // txtPesquisa
+            // 
+            txtPesquisa.BorderRadius = 10;
+            txtPesquisa.CustomizableEdges = customizableEdges19;
+            txtPesquisa.DefaultText = "";
+            txtPesquisa.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtPesquisa.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtPesquisa.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtPesquisa.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtPesquisa.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtPesquisa.Font = new Font("Segoe UI", 9F);
+            txtPesquisa.ForeColor = Color.Silver;
+            txtPesquisa.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtPesquisa.Location = new Point(6, 3);
+            txtPesquisa.Name = "txtPesquisa";
+            txtPesquisa.PlaceholderText = "🔍Pesquisar por livro...";
+            txtPesquisa.SelectedText = "";
+            txtPesquisa.ShadowDecoration.CustomizableEdges = customizableEdges20;
+            txtPesquisa.Size = new Size(231, 36);
+            txtPesquisa.TabIndex = 1;
+            // 
+            // btnNovo
+            // 
+            btnNovo.BorderRadius = 7;
+            btnNovo.CustomizableEdges = customizableEdges21;
+            btnNovo.DisabledState.BorderColor = Color.DarkGray;
+            btnNovo.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnNovo.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnNovo.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnNovo.FillColor = Color.Green;
+            btnNovo.Font = new Font("Segoe UI", 9F);
+            btnNovo.ForeColor = Color.White;
+            btnNovo.Location = new Point(243, 3);
+            btnNovo.Name = "btnNovo";
+            btnNovo.ShadowDecoration.CustomizableEdges = customizableEdges22;
+            btnNovo.Size = new Size(133, 33);
+            btnNovo.TabIndex = 1;
+            btnNovo.Text = "+ Novo Usuário";
+            btnNovo.Click += btnNovo_Click;
+            // 
+            // btnAtualizar
+            // 
+            btnAtualizar.BorderRadius = 7;
+            btnAtualizar.CustomizableEdges = customizableEdges23;
+            btnAtualizar.DisabledState.BorderColor = Color.DarkGray;
+            btnAtualizar.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnAtualizar.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnAtualizar.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnAtualizar.FillColor = Color.Gray;
+            btnAtualizar.Font = new Font("Segoe UI", 9F);
+            btnAtualizar.ForeColor = Color.White;
+            btnAtualizar.Location = new Point(567, 3);
+            btnAtualizar.Name = "btnAtualizar";
+            btnAtualizar.ShadowDecoration.CustomizableEdges = customizableEdges24;
+            btnAtualizar.Size = new Size(94, 33);
+            btnAtualizar.TabIndex = 1;
+            btnAtualizar.Text = "🔄️ Atualizar";
+            // 
+            // btnExcluir
+            // 
+            btnExcluir.BorderRadius = 7;
+            btnExcluir.CustomizableEdges = customizableEdges25;
+            btnExcluir.DisabledState.BorderColor = Color.DarkGray;
+            btnExcluir.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnExcluir.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnExcluir.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnExcluir.FillColor = Color.FromArgb(192, 0, 0);
+            btnExcluir.Font = new Font("Segoe UI", 9F);
+            btnExcluir.ForeColor = Color.White;
+            btnExcluir.Location = new Point(476, 3);
+            btnExcluir.Name = "btnExcluir";
+            btnExcluir.ShadowDecoration.CustomizableEdges = customizableEdges26;
+            btnExcluir.Size = new Size(85, 33);
+            btnExcluir.TabIndex = 1;
+            btnExcluir.Text = "🗑️ Excluir";
+            // 
+            // lblInfo
+            // 
+            lblInfo.AutoSize = true;
+            lblInfo.ForeColor = SystemColors.ControlDark;
+            lblInfo.Location = new Point(62, 90);
+            lblInfo.Name = "lblInfo";
+            lblInfo.Size = new Size(369, 15);
+            lblInfo.TabIndex = 17;
+            lblInfo.Text = "ℹ️ Gerencia Livros do ASP.NET Core Identity registrados na aplicação\r\n";
+            // 
+            // gridLivros
+            // 
+            gridLivros.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            gridLivros.Columns.AddRange(new DataGridViewColumn[] { colId, colTitle, colAuthor, colStatus });
+            gridLivros.Location = new Point(62, 173);
+            gridLivros.Name = "gridLivros";
+            gridLivros.Size = new Size(673, 306);
+            gridLivros.TabIndex = 16;
+            // 
+            // colId
+            // 
+            colId.HeaderText = "ID";
+            colId.Name = "colId";
+            colId.Width = 110;
+            // 
+            // colTitle
+            // 
+            colTitle.HeaderText = "Titulo";
+            colTitle.Name = "colTitle";
+            colTitle.Width = 325;
+            // 
+            // colAuthor
+            // 
+            colAuthor.HeaderText = "Autor";
+            colAuthor.Name = "colAuthor";
+            // 
+            // colStatus
+            // 
+            colStatus.HeaderText = "Status";
+            colStatus.Name = "colStatus";
+            // 
+            // lblTitulo
+            // 
+            lblTitulo.AutoSize = true;
+            lblTitulo.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold);
+            lblTitulo.ForeColor = SystemColors.ActiveCaption;
+            lblTitulo.Location = new Point(62, 65);
+            lblTitulo.Name = "lblTitulo";
+            lblTitulo.Size = new Size(260, 25);
+            lblTitulo.TabIndex = 15;
+            lblTitulo.Text = "📚 Gerenciamento de Livros";
             // 
             // dragControl
             // 
@@ -294,11 +429,14 @@
             Text = "Gerenciamento de Biblioteca";
             Load += MainForm_Load;
             pnlSidebar.ResumeLayout(false);
-            pnlNavContainer.ResumeLayout(false);
             pnlBottom.ResumeLayout(false);
             pnlLogo.ResumeLayout(false);
             pnlHeader.ResumeLayout(false);
             pnlHeader.PerformLayout();
+            pnlContent.ResumeLayout(false);
+            pnlContent.PerformLayout();
+            panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)gridLivros).EndInit();
             ResumeLayout(false);
         }
 
@@ -321,7 +459,6 @@
             btn.Text = text;
             btn.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             btn.TextOffset = new System.Drawing.Point(10, 0);
-            btn.Click += new System.EventHandler(this.btnNav_Click);
         }
 
         #endregion
@@ -330,9 +467,6 @@
         private Guna.UI2.WinForms.Guna2Panel pnlLogo;
         private System.Windows.Forms.Label lblLogo;
         private Guna.UI2.WinForms.Guna2Panel pnlNavContainer;
-        private Guna.UI2.WinForms.Guna2Button btnDashboard;
-        private Guna.UI2.WinForms.Guna2Button btnLivros;
-        private Guna.UI2.WinForms.Guna2Button btnCategorias;
         private Guna.UI2.WinForms.Guna2Panel pnlBottom;
         private Guna.UI2.WinForms.Guna2Button btnLogout;
         private Guna.UI2.WinForms.Guna2Panel pnlHeader;
@@ -343,5 +477,18 @@
         private Guna.UI2.WinForms.Guna2Panel pnlContent;
         private Guna.UI2.WinForms.Guna2DragControl dragControl;
         private Guna.UI2.WinForms.Guna2BorderlessForm borderForm;
+        private Panel panel1;
+        private Guna.UI2.WinForms.Guna2Button btnEditar;
+        private Guna.UI2.WinForms.Guna2TextBox txtPesquisa;
+        private Guna.UI2.WinForms.Guna2Button btnNovo;
+        private Guna.UI2.WinForms.Guna2Button btnAtualizar;
+        private Guna.UI2.WinForms.Guna2Button btnExcluir;
+        private Label lblInfo;
+        private DataGridView gridLivros;
+        private Label lblTitulo;
+        private DataGridViewTextBoxColumn colId;
+        private DataGridViewTextBoxColumn colTitle;
+        private DataGridViewTextBoxColumn colAuthor;
+        private DataGridViewCheckBoxColumn colStatus;
     }
 }

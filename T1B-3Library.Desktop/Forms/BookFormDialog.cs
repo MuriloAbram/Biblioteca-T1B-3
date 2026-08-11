@@ -5,6 +5,7 @@ using System;
 // Importa as classes necessárias para trabalhar com Windows Forms,
 // como Form, MessageBox, DialogResult, TextBox, Button etc.
 using System.Windows.Forms;
+using T1B_3Library.Desktop.DTOs;
 
 // Define o namespace onde essa classe está localizada.
 // O namespace serve para organizar as classes do projeto.
@@ -31,8 +32,6 @@ namespace T1B_3Library.Desktop.Forms
         // Guarda o nome do autor do livro.
         public string Author { get; private set; } = string.Empty;
 
-        // Guarda o ISBN do livro.
-        public string Isbn { get; private set; } = string.Empty;
 
         // Guarda a categoria do livro.
         public string Category { get; private set; } = string.Empty;
@@ -60,6 +59,24 @@ namespace T1B_3Library.Desktop.Forms
         // o formulário começa no modo de novo cadastro.
         private readonly bool _isEditMode = false;
 
+        /// <summary>
+        /// DTO preenchido após clicar em "Salvar" com sucesso (modo criação).
+        /// Fica null se o usuário cancelar o formulário ou se estiver em modo edição.
+        /// </summary>
+        public CreateBookDto? BookDto { get; private set; }
+
+        /// <summary>
+        /// DTO preenchido após clicar em "Salvar" com sucesso (modo edição).
+        /// Fica null se o usuário cancelar o formulário ou se estiver em modo criação.
+        /// </summary>
+        public UpdateBookDto? BookUpdateDto  { get; private set; }
+
+        /// <summary>
+        /// Id do usuário sendo editado. Só é preenchido em modo edição.
+        /// </summary>
+        public string? UsuarioId { get; private set; }
+
+        private readonly bool _modoEdicao;
 
         // ============================================================
         // CONSTRUTOR - NOVO CADASTRO
@@ -102,7 +119,6 @@ namespace T1B_3Library.Desktop.Forms
         public BookFormDialog(
             string title,
             string author,
-            string isbn,
             string category,
             int year,
             int quantity
@@ -125,11 +141,7 @@ namespace T1B_3Library.Desktop.Forms
 
             // Coloca o autor recebido no campo de texto.
             txtAuthor.Text = author;
-<<<<<<< HEAD
-=======
 
-            // Seleciona no ComboBox a categoria recebida.
->>>>>>> 5018a15be25546009e535cafd384ce4b27bf4ba7
             cmbCategory.SelectedItem = category;
 
             // Converte o número do ano para texto
@@ -252,8 +264,6 @@ namespace T1B_3Library.Desktop.Forms
 
             // Obtém o nome do autor e remove espaços extras.
             Author = txtAuthor.Text.Trim();
-<<<<<<< HEAD
-=======
 
             // Obtém a categoria selecionada no ComboBox.
             //
@@ -266,7 +276,6 @@ namespace T1B_3Library.Desktop.Forms
             //
             // "?? """ significa:
             // se o resultado for null, utilize uma string vazia.
->>>>>>> 5018a15be25546009e535cafd384ce4b27bf4ba7
             Category = cmbCategory.SelectedItem?.ToString() ?? "";
 
 

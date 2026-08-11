@@ -3,23 +3,25 @@
 namespace T1B_3Library.Desktop.DTOs
 {
     // DTO contendo a representação completa do Livro retornada/exibida pela API
-    public record BookDto(
-        Guid Id,            // Identificador único (chave primária) do livro
-        string Title,       // Título do livro
-        string Author,      // Nome do autor do livro
-        string Status       // Estado atual (ex: Disponível, Emprestado, Indisponível)
-    );
-
+    public class BookDto
+    {
+        public Guid Id { get; set; }           // Identificador único (chave primária) do livro
+        public string Title { get; set; } = string.Empty;       // Título do livro
+        public string Author { get; set; } = string.Empty;      // Nome do autor do livro
+        public string Status { get; set; } = string.Empty;       // Estado atual (ex: Disponível, Emprestado, Indisponível)
+    }
     // DTO contendo apenas os dados necessários para cadastrar um novo livro
-    public record CreateBookDto(
-        string Title,       // Título do livro a ser criado
-        string Author      // Nome do autor
-    );
+    public class CreateBookDto
+    {
+        public string Title { get; set; } = string.Empty;       // Título do livro a ser criado
+        public string Author { get; set; } = string.Empty;      // Nome do autor
+    }
 
     // DTO contendo os dados permitidos para atualizar um livro existente
-    public record UpdateBookDto(
-        string Title,       // Novo título
-        string Author,      // Novo autor
-        string Status       // Novo status do livro
-    );
+    public class UpdateBookDto
+    {
+        public string Title { get; set; } = string.Empty;       // Novo título
+        public string Author { get; set; } = string.Empty;      // Novo autor
+        public string Status { get; set; } = string.Empty;       // Novo status do livro
+    }
 }
