@@ -7,7 +7,6 @@ namespace T1B_3Library.Desktop.DTOs
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
-
         public string Author { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int RealeaseYear { get; set; }
@@ -21,7 +20,7 @@ namespace T1B_3Library.Desktop.DTOs
     public class CreateBookDto
     {
         public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
         public int RealeaseYear { get; set; }
         public bool IsFeatured { get; set; }
     }
@@ -30,7 +29,7 @@ namespace T1B_3Library.Desktop.DTOs
     public class UpdateBookDto
     {
         public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
         public int RealeaseYear { get; set; }
         public bool IsFeatured { get; set; }
     }

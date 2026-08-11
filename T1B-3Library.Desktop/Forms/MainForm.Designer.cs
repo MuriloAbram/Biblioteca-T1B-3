@@ -226,7 +226,7 @@
             lblTitle.ForeColor = Color.White;
             lblTitle.Location = new Point(25, 18);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(107, 30);
+            lblTitle.Size = new Size(139, 37);
             lblTitle.TabIndex = 3;
             lblTitle.Text = "📖 Livros";
             // 
@@ -290,14 +290,13 @@
             txtPesquisa.ForeColor = Color.Silver;
             txtPesquisa.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtPesquisa.Location = new Point(6, 3);
+            txtPesquisa.Margin = new Padding(3, 4, 3, 4);
             txtPesquisa.Name = "txtPesquisa";
             txtPesquisa.PlaceholderText = "🔍Pesquisar por livro...";
             txtPesquisa.SelectedText = "";
             txtPesquisa.ShadowDecoration.CustomizableEdges = customizableEdges20;
             txtPesquisa.Size = new Size(231, 36);
             txtPesquisa.TabIndex = 1;
-            txtPesquisa.TextChanged += txtPesquisa_TextChanged_1;
-            txtPesquisa.KeyUp += txtPesquisa_KeyUp;
             // 
             // btnNovo
             // 
@@ -362,7 +361,7 @@
             lblInfo.ForeColor = SystemColors.ControlDark;
             lblInfo.Location = new Point(62, 90);
             lblInfo.Name = "lblInfo";
-            lblInfo.Size = new Size(369, 15);
+            lblInfo.Size = new Size(471, 20);
             lblInfo.TabIndex = 17;
             lblInfo.Text = "ℹ️ Gerencia Livros do ASP.NET Core Identity registrados na aplicação\r\n";
             // 
@@ -372,30 +371,37 @@
             gridLivros.Columns.AddRange(new DataGridViewColumn[] { colId, colTitle, colAuthor, colStatus });
             gridLivros.Location = new Point(62, 173);
             gridLivros.Name = "gridLivros";
-            gridLivros.Size = new Size(673, 306);
+            gridLivros.RowHeadersWidth = 51;
+            gridLivros.Size = new Size(746, 306);
             gridLivros.TabIndex = 16;
             // 
             // colId
             // 
             colId.HeaderText = "ID";
+            colId.MinimumWidth = 6;
             colId.Name = "colId";
             colId.Width = 110;
             // 
             // colTitle
             // 
             colTitle.HeaderText = "Titulo";
+            colTitle.MinimumWidth = 6;
             colTitle.Name = "colTitle";
             colTitle.Width = 325;
             // 
             // colAuthor
             // 
             colAuthor.HeaderText = "Autor";
+            colAuthor.MinimumWidth = 6;
             colAuthor.Name = "colAuthor";
+            colAuthor.Width = 125;
             // 
             // colStatus
             // 
             colStatus.HeaderText = "Status";
+            colStatus.MinimumWidth = 6;
             colStatus.Name = "colStatus";
+            colStatus.Width = 125;
             // 
             // lblTitulo
             // 
@@ -404,7 +410,7 @@
             lblTitulo.ForeColor = SystemColors.ActiveCaption;
             lblTitulo.Location = new Point(62, 65);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(260, 25);
+            lblTitulo.Size = new Size(339, 32);
             lblTitulo.TabIndex = 15;
             lblTitulo.Text = "📚 Gerenciamento de Livros";
             // 

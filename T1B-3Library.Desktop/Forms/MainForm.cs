@@ -90,11 +90,11 @@ namespace T1B_3Library.Desktop.Forms
 
             try
             {
-                var tarefaGames = _BookService.GetAllAsync();
+                var tarefaLivros = _BookService.GetAllAsync();
 
-                await Task.WhenAll(tarefaGames);
+                await Task.WhenAll(tarefaLivros);
 
-                _todosLivros = tarefaGames.Result;
+                _todosLivros = tarefaLivros.Result;
 
 
                 PopularGrid(_todosLivros);
@@ -117,12 +117,11 @@ namespace T1B_3Library.Desktop.Forms
             foreach (var l in livros)
             {
                 gridLivros.Rows.Add(
-                    l.Id,
-                    l.Title,
-                    l.RealeaseYear,
-                    l.IsFeatured,
-                    l.CreatedAt.ToString("dd/MM/yyyy HH:mm"));
-
+                    l.Id,           // 1ª Coluna: ID
+                    l.Title,        // 2ª Coluna: Titulo
+                    l.Author,       // 3ª Coluna: Autor
+                    l.IsFeatured    // 4ª Coluna: Status (Checkbox true/false)
+                );
             }
         }
 
@@ -151,8 +150,6 @@ namespace T1B_3Library.Desktop.Forms
             }
 
         }
-
-
 
         private async void btnLogout_Click(object sender, EventArgs e)
         {
