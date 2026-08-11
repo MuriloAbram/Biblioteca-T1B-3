@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using T1B_3Library.Desktop.DTOs;
 using T1B_3Library.Desktop.Helpers;
+using static System.Net.WebRequestMethods;
 
 namespace T1B_3Library.Desktop.Services
 {
@@ -132,16 +133,9 @@ namespace T1B_3Library.Desktop.Services
         /// <summary>
         /// Remove um livro pelo ID.
         /// </summary>
-        public async Task<bool>
-            DeleteAsync(Guid id)
+        public async Task<(bool Success, string ErrorMessage)> DeleteAsync(Guid id)
         {
-            var result =
-                await _httpHelper.DeleteAsync(
-                    $"books/{id}"
-                );
-
-            // Retorna somente o bool da tupla
-            return result.Success;
+            return await _httpHelper.DeleteAsync($"/api/books/{id}");
         }
     }
 }

@@ -274,6 +274,7 @@
             btnEditar.Size = new Size(79, 33);
             btnEditar.TabIndex = 11;
             btnEditar.Text = "✏Editar";
+            btnEditar.Click += btnEditar_Click;
             // 
             // txtPesquisa
             // 
@@ -332,6 +333,7 @@
             btnAtualizar.Size = new Size(94, 33);
             btnAtualizar.TabIndex = 1;
             btnAtualizar.Text = "🔄️ Atualizar";
+            btnAtualizar.Click += btnAtualizar_Click;
             // 
             // btnExcluir
             // 
@@ -350,6 +352,7 @@
             btnExcluir.Size = new Size(85, 33);
             btnExcluir.TabIndex = 1;
             btnExcluir.Text = "🗑️ Excluir";
+            btnExcluir.Click += btnExcluir_Click;
             // 
             // lblInfo
             // 

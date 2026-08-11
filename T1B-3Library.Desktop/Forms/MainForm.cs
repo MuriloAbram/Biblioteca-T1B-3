@@ -31,8 +31,23 @@ namespace T1B_3Library.Desktop.Forms
             InitializeComponent();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        // Tornado async para poder inicializar serviços e carregar dados
+        private async void MainForm_Load(object sender, EventArgs e)
         {
+            // Inicializa o serviço HTTP / API
+            try
+            {
+                _BookService = new BooksApiService(HttpClientHelper.Instance);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao inicializar serviço de livros: {ex.Message}",
+                    "Erro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
             // Exibe as informações do usuário logado no topo
             if (SessionManager.Instance.CurrentUser != null)
             {
@@ -42,6 +57,10 @@ namespace T1B_3Library.Desktop.Forms
             {
                 lblUserInfo.Text = "👤 Usuário Conectado";
             }
+
+            // Configura permissões e carrega os dados iniciais
+            ConfigurarPermissões();
+            await CarregarDadosAsync();
         }
 
         private async Task CarregarDadosAsync()
@@ -129,10 +148,73 @@ namespace T1B_3Library.Desktop.Forms
             using var form = new BookFormDialog();
             if (form.ShowDialog() == DialogResult.OK && form.BookDto != null)
             {
-                var (success, _, error) = await _BookService.CreateAsync(form.BookDto);
+                if (_BookService == null)
+                {
+                    MessageBox.Show("Serviço de livros não inicializado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    var created = await _BookService.CreateAsync(form.BookDto);
+
+                    if (created != null)
+                    {
+                        MessageBox.Show("✅ Livro criado com sucesso!",
+                            "Sucesso",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                        await CarregarDadosAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("❌ Falha ao criar livro.",
+                        "Erro",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro ao criar livro: {ex.Message}",
+                        "Erro",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private async void btnExcluir_Click(object sender, EventArgs e)
+        {
+            var u = ObterLivroSelecionado();
+            if (u == null)
+            {
+                MessageBox.Show("Selecione um livro para excluir.", "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var conf = MessageBox.Show($"Deseja excluir o livro \"{u.Title}\"?",
+                "Confirmar Exclusão",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (conf != DialogResult.Yes) return;
+
+            if (_BookService == null)
+            {
+                MessageBox.Show("Serviço de livros não inicializado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                // Desestrutura a tupla retornada por DeleteAsync
+                var (success, error) = await _BookService.DeleteAsync(u.Id);
                 if (success)
                 {
-                    MessageBox.Show("✅ Usuário criado com sucesso!",
+                    MessageBox.Show("✅ Livro excluído com sucesso!",
                         "Sucesso",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -141,10 +223,97 @@ namespace T1B_3Library.Desktop.Forms
                 else
                 {
                     MessageBox.Show($"❌ {error}",
+                        "Erro",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao excluir livro: {ex.Message}",
                     "Erro",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+            }
+        }
 
+        private BookDto? ObterLivroSelecionado()
+        {
+            if (gridLivros.SelectedRows.Count == 0)
+                return null;
+
+            var row = gridLivros.SelectedRows[0];
+            var idValue = row.Cells["colId"].Value;
+            if (idValue == null)
+                return null;
+
+            // Se o valor já for um Guid, usa diretamente.
+            if (idValue is Guid guidValue)
+            {
+                return _todosLivros.FirstOrDefault(u => u.Id == guidValue);
+            }
+
+            // Caso venha como string (mais comum), tenta converter.
+            if (Guid.TryParse(idValue.ToString(), out var parsedGuid))
+            {
+                return _todosLivros.FirstOrDefault(u => u.Id == parsedGuid);
+            }
+
+            // Não foi possível interpretar o ID
+            return null;
+        }
+
+        private async void btnAtualizar_Click(object sender, EventArgs e) => await CarregarDadosAsync();
+
+        private async void btnEditar_Click(object sender, EventArgs e)
+        {
+            var livro = ObterLivroSelecionado();
+            if (livro == null)
+            {
+                MessageBox.Show("Selecione um Livro para editar.",
+                    "Aviso",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
+            // Abre o formulário de edição preenchendo os campos conhecidos.
+            // Como BookFormDialog tem um construtor com campos individuais,
+            // passamos valores mínimos quando não existirem (categoria/ano/qt).
+            using var form = new BookFormDialog(livro.Title, livro.Author, string.Empty, 0, 0);
+            if (form.ShowDialog() == DialogResult.OK && form.BookUpdateDto != null)
+            {
+                if (_BookService == null)
+                {
+                    MessageBox.Show("Serviço de livros não inicializado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    var success = await _BookService.UpdateAsync(livro.Id, form.BookUpdateDto);
+                    if (success)
+                    {
+                        MessageBox.Show("✅ Livro atualizado com sucesso!",
+                            "Sucesso",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                        await CarregarDadosAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("❌ Falha ao atualizar livro.",
+                        "Erro",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro ao atualizar livro: {ex.Message}",
+                        "Erro",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
         }
