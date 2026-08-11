@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using T1B_3Library.Desktop.DTOs;
@@ -135,7 +134,8 @@ namespace T1B_3Library.Desktop.Services
         /// </summary>
         public async Task<(bool Success, string ErrorMessage)> DeleteAsync(Guid id)
         {
-            return await _httpHelper.DeleteAsync($"/api/books/{id}");
+            // endpoint relativo consistente com demais chamadas (sem leading '/')
+            return await _httpHelper.DeleteAsync($"books/{id}");
         }
     }
 }
