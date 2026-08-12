@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Repositories\GenderRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Migrations\" />
   </ItemGroup>
 

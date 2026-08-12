@@ -20,14 +20,14 @@ namespace T1B_3Library.Infrastructure.Repositories
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
             return await _context.Books
-                .Include(b => b.Gender)
+                .Include(b => b.Title)
                 .ToListAsync();
         }
 
         public async Task<Book?> GetByIdAsync(int id)
         {
             return await _context.Books
-                .Include(b => b.Gender)
+                .Include(b => b.Id)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
@@ -35,17 +35,9 @@ namespace T1B_3Library.Infrastructure.Repositories
         public async Task<IEnumerable<Book>> GetFeaturedAsync()
         {
             return await _context.Books
-                .Include(b => b.Gender)
+                .Include(b => b.IsFeatured)
                 .OrderByDescending(b => b.Id)
                 .Take(5)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Book>> GetByGenderAsync(int genderId)
-        {
-            return await _context.Books
-                .Include(b => b.Gender)
-                .Where(b => b.GenderId == genderId)
                 .ToListAsync();
         }
 

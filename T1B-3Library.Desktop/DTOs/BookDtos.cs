@@ -10,9 +10,6 @@ namespace T1B_3Library.Desktop.DTOs
         public string Author { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int RealeaseYear { get; set; }
-        /// <summary>
-        /// Nome da categoria do jogo, retornado pela API para exibição no DataGridView
-        /// </summary>
         public bool IsFeatured { get; set; }
         public DateTime CreatedAt { get; set; }
     }
@@ -22,7 +19,7 @@ namespace T1B_3Library.Desktop.DTOs
         public string Title { get; set; } = string.Empty;
         public string Author { get; set; } = string.Empty;
         public int RealeaseYear { get; set; }
-        public bool IsFeatured { get; set; }
+        public int IsFeatured { get; set; }
     }
 
     // DTO contendo os dados permitidos para atualizar um livro existente

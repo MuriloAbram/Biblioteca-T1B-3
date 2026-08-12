@@ -36,12 +36,6 @@ namespace T1B_3Library.Application.Services
             return books.Select(MapToDto).ToList();
         }
 
-        public async Task<IEnumerable<BookDto>> GetByGenderAsync(int genderId)
-        {
-            var books = await _bookRepository.GetByGenderAsync(genderId);
-            return books.Select(MapToDto).ToList();
-        }
-
         public async Task<BookDto> CreateAsync(CreateBookDto dto)
         {
             var book = new Book
@@ -50,7 +44,6 @@ namespace T1B_3Library.Application.Services
                 Author = dto.Author,
                 Publisher = dto.Publisher,
                 YearPublication = dto.YearPublication,
-                GenderId = dto.GenderId,
                 IsFeatured = dto.IsFeatured,
                 CreatedAt = DateTime.UtcNow
             };
@@ -70,7 +63,6 @@ namespace T1B_3Library.Application.Services
             book.Author = dto.Author;
             book.Publisher = dto.Publisher;
             book.YearPublication = dto.YearPublication;
-            book.GenderId = dto.GenderId;
             book.IsFeatured = dto.IsFeatured;
 
             await _bookRepository.UpdateAsync(book);
@@ -100,8 +92,6 @@ namespace T1B_3Library.Application.Services
                 Author = book.Author,
                 Publisher = book.Publisher,
                 YearPublication = book.YearPublication,
-                GenderId = book.GenderId,
-                GenderName = book.Gender?.Name ?? string.Empty,
                 IsFeatured = book.IsFeatured,
                 CreatedAt = book.CreatedAt
             };

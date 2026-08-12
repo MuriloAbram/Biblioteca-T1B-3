@@ -13,7 +13,6 @@ namespace T1B_3Library.Application.Interfaces
         Task<IEnumerable<BookDto>> GetAllAsync();
         Task<BookDto?> GetByIdAsync(int id);
         Task<IEnumerable<BookDto>> GetFeaturedAsync();
-        Task<IEnumerable<BookDto>> GetByGenderAsync(int genderId);
         Task<BookDto> CreateAsync(CreateBookDto dto);
         Task<BookDto?> UpdateAsync(int id, UpdateBookDto dto);
         Task<bool> DeleteAsync(int id);

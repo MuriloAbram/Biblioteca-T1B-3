@@ -11,7 +11,6 @@ namespace T1B_3Library.Infrastructure.Context
         {
         }
         public DbSet<Book> Books { get; set; } = null!;
-        public DbSet<Gender> Genders { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,7 +18,6 @@ namespace T1B_3Library.Infrastructure.Context
 
             // Aplica todas as configurações IEntityTypeConfiguration<T> do assembly
             modelBuilder.ApplyConfiguration(new BookConfiguration());
-            modelBuilder.ApplyConfiguration(new GenderConfiguration());
         }
     }
 }

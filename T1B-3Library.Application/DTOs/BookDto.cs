@@ -14,8 +14,6 @@ namespace T1B_3Library.Application.DTOs
         public string Author { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
         public int YearPublication { get; set; }
-        public int GenderId { get; set; }
-        public string GenderName { get; set; } = string.Empty;
         public bool IsFeatured { get; set; }
         public DateTime CreatedAt { get; set; }
     }
@@ -25,7 +23,6 @@ namespace T1B_3Library.Application.DTOs
         public string Author { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
         public int YearPublication { get; set; }
-        public int GenderId { get; set; }
         public bool IsFeatured { get; set; }
     }
     public class UpdateBookDto
@@ -34,7 +31,6 @@ namespace T1B_3Library.Application.DTOs
         public string Author { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
         public int YearPublication { get; set; }
-        public int GenderId { get; set; }
         public bool IsFeatured { get; set; }
     }
 }

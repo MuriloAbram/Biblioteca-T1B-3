@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using T1B_3Library.Application.Services;
 using T1B_3Library.Application.Interfaces;
-using T1B_3Library.Application.Services;
 using T1B_3Library.Domain.Interfaces;
 using T1B_3Library.Infrastructure.Context;
 using T1B_3Library.Infrastructure.Identity;
@@ -81,9 +80,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 // o .NET automaticamente cria um BookService e injeta no construtor.
 // =====================================================================
 builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IGenderRepository, GenderRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IGenderService, GenderService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 
 // =====================================================================
