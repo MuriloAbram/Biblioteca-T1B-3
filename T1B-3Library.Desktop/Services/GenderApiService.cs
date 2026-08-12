@@ -6,11 +6,11 @@ namespace T1B_3Library.Desktop.Services
     /// <summary>
     /// Serviço de comunicação com os endpoints de Categorias da API.
     /// </summary>
-    public class CategoriasApiService
+    public class GenderApiService
     {
         private readonly HttpClientHelper _http;
 
-        public CategoriasApiService()
+        public GenderApiService()
         {
             _http = HttpClientHelper.Instance;
         }
@@ -22,7 +22,7 @@ namespace T1B_3Library.Desktop.Services
         {
             try
             {
-                var gender = await _http.GetAsync<List<GenderResponseDto>>("/api/categories");
+                var gender = await _http.GetAsync<List<GenderResponseDto>>("/api/gender");
                 return gender ?? new List<GenderResponseDto>();
             }
             catch
@@ -38,7 +38,7 @@ namespace T1B_3Library.Desktop.Services
         public async Task<(bool Success, GenderResponseDto? Gender, string ErrorMessage)>
             CreateAsync(CreateGenderDto dto)
         {
-            return await _http.PostAsync<GenderResponseDto>("/api/categories", dto);
+            return await _http.PostAsync<GenderResponseDto>("/api/gender", dto);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace T1B_3Library.Desktop.Services
         public async Task<(bool Success, GenderResponseDto? Gender, string ErrorMessage)>
             UpdateAsync(int id, UpdateGenderDto dto)
         {
-            return await _http.PutAsync<GenderResponseDto>($"/api/categories/{id}", dto);
+            return await _http.PutAsync<GenderResponseDto>($"/api/gender/{id}", dto);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace T1B_3Library.Desktop.Services
         /// </summary>
         public async Task<(bool Success, string ErrorMessage)> DeleteAsync(int id)
         {
-            return await _http.DeleteAsync($"/api/categories/{id}");
+            return await _http.DeleteAsync($"/api/gender/{id}");
         }
     }
 }

@@ -12,7 +12,7 @@ namespace T1B_3Library.Domain.Interfaces
         Task<IEnumerable<Gender>> GetAllAsync();
         Task<Gender?> GetByIdAsync(int id);
         Task AddAsync(Gender gender);
-        Task UpdateAsync(Gender category);
+        Task UpdateAsync(Gender gender);
         Task DeleteAsync(int id);
         Task<int> CountAsync();
     }

@@ -11,9 +11,9 @@ namespace T1B_3Library.API.Controllers
     {
         private readonly IGenderService _genderService;
 
-        public GendersController(IGenderService categoryService)
+        public GendersController(IGenderService GenderService)
         {
-            _genderService = categoryService;
+            _genderService = GenderService;
         }
 
         [HttpGet]

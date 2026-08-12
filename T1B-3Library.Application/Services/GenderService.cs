@@ -21,14 +21,14 @@ namespace T1B_3Library.Application.Services
 
         public async Task<IEnumerable<GenderDto>> GetAllAsync()
         {
-            var categories = await _genderRepository.GetAllAsync();
-            return categories.Select(MapToDto);
+            var gender = await _genderRepository.GetAllAsync();
+            return gender.Select(MapToDto);
         }
 
         public async Task<GenderDto?> GetByIdAsync(int id)
         {
-            var category = await _genderRepository.GetByIdAsync(id);
-            return category == null ? null : MapToDto(category);
+            var gender = await _genderRepository.GetByIdAsync(id);
+            return gender == null ? null : MapToDto(gender);
         }
 
         public async Task<GenderDto> CreateAsync(CreateGenderDto dto)

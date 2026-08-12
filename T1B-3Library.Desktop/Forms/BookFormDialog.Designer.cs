@@ -43,8 +43,8 @@
             txtTitle = new Guna.UI2.WinForms.Guna2TextBox();
             lblAuthor = new Label();
             txtAuthor = new Guna.UI2.WinForms.Guna2TextBox();
-            lblCategory = new Label();
-            cmbCategory = new Guna.UI2.WinForms.Guna2ComboBox();
+            lblGender = new Label();
+            cmbGender = new Guna.UI2.WinForms.Guna2ComboBox();
             lblYear = new Label();
             txtYear = new Guna.UI2.WinForms.Guna2TextBox();
             lblQuantity = new Label();
@@ -148,32 +148,32 @@
             // 
             // lblCategory
             // 
-            lblCategory.AutoSize = true;
-            lblCategory.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            lblCategory.ForeColor = Color.White;
-            lblCategory.Location = new Point(20, 243);
-            lblCategory.Name = "lblCategory";
-            lblCategory.Size = new Size(84, 21);
-            lblCategory.TabIndex = 18;
-            lblCategory.Text = "Categoria";
+            lblGender.AutoSize = true;
+            lblGender.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblGender.ForeColor = Color.White;
+            lblGender.Location = new Point(20, 243);
+            lblGender.Name = "lblGender";
+            lblGender.Size = new Size(84, 21);
+            lblGender.TabIndex = 18;
+            lblGender.Text = "Gender";
             // 
             // cmbCategory
             // 
-            cmbCategory.BackColor = Color.Transparent;
-            cmbCategory.BorderRadius = 8;
-            cmbCategory.CustomizableEdges = customizableEdges9;
-            cmbCategory.DrawMode = DrawMode.OwnerDrawFixed;
-            cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbCategory.FillColor = Color.FromArgb(37, 42, 64);
-            cmbCategory.FocusedColor = Color.Empty;
-            cmbCategory.Font = new Font("Segoe UI", 9.5F);
-            cmbCategory.ForeColor = Color.White;
-            cmbCategory.ItemHeight = 30;
-            cmbCategory.Location = new Point(20, 267);
-            cmbCategory.Name = "cmbCategory";
-            cmbCategory.ShadowDecoration.CustomizableEdges = customizableEdges10;
-            cmbCategory.Size = new Size(200, 36);
-            cmbCategory.TabIndex = 17;
+            cmbGender.BackColor = Color.Transparent;
+            cmbGender.BorderRadius = 8;
+            cmbGender.CustomizableEdges = customizableEdges9;
+            cmbGender.DrawMode = DrawMode.OwnerDrawFixed;
+            cmbGender.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbGender.FillColor = Color.FromArgb(37, 42, 64);
+            cmbGender.FocusedColor = Color.Empty;
+            cmbGender.Font = new Font("Segoe UI", 9.5F);
+            cmbGender.ForeColor = Color.White;
+            cmbGender.ItemHeight = 30;
+            cmbGender.Location = new Point(20, 267);
+            cmbGender.Name = "cmbGender";
+            cmbGender.ShadowDecoration.CustomizableEdges = customizableEdges10;
+            cmbGender.Size = new Size(200, 36);
+            cmbGender.TabIndex = 17;
             // 
             // lblYear
             // 
@@ -280,8 +280,8 @@
             Controls.Add(lblQuantity);
             Controls.Add(txtYear);
             Controls.Add(lblYear);
-            Controls.Add(cmbCategory);
-            Controls.Add(lblCategory);
+            Controls.Add(cmbGender);
+            Controls.Add(lblGender);
             Controls.Add(txtAuthor);
             Controls.Add(lblAuthor);
             Controls.Add(txtTitle);
@@ -321,8 +321,8 @@
         private Guna.UI2.WinForms.Guna2TextBox txtTitle;
         private System.Windows.Forms.Label lblAuthor;
         private Guna.UI2.WinForms.Guna2TextBox txtAuthor;
-        private System.Windows.Forms.Label lblCategory;
-        private Guna.UI2.WinForms.Guna2ComboBox cmbCategory;
+        private System.Windows.Forms.Label lblGender;
+        private Guna.UI2.WinForms.Guna2ComboBox cmbGender;
         private System.Windows.Forms.Label lblYear;
         private Guna.UI2.WinForms.Guna2TextBox txtYear;
         private System.Windows.Forms.Label lblQuantity;

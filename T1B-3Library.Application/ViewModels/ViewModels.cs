@@ -10,7 +10,7 @@ namespace T1B_3Library.Application.ViewModels
     public class HomeViewModel
     {
         public IEnumerable<BookDto> FeaturedBooks { get; set; } = new List<BookDto>();
-        public IEnumerable<GenderDto> Categories { get; set; } = new List<GenderDto>();
+        public IEnumerable<GenderDto> Gender { get; set; } = new List<GenderDto>();
         public IEnumerable<BookDto> RecentBooks { get; set; } = new List<BookDto>();
     }
 
@@ -44,6 +44,6 @@ namespace T1B_3Library.Application.ViewModels
     {
         public IEnumerable<BookDto> Book { get; set; } = new List<BookDto>();
         public IEnumerable<BookDto> Gender { get; set; } = new List<BookDto>();
-        public int? SelectedCategoryId { get; set; }
+        public int? SelectedGenderId { get; set; }
     }
 }

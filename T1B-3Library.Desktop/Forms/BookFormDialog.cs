@@ -12,7 +12,7 @@ namespace T1B_3Library.Desktop.Forms
         // ============================================================
         public string BookTitle { get; private set; } = string.Empty;
         public string Author { get; private set; } = string.Empty;
-        public string Category { get; private set; } = string.Empty;
+        public string Gender { get; private set; } = string.Empty;
         public int Year { get; private set; }
         public int Quantity { get; private set; }
 
@@ -46,7 +46,7 @@ namespace T1B_3Library.Desktop.Forms
         public BookFormDialog(
             string title,
             string author,
-            string category,
+            string gender,
             int year,
             int quantity
         ) : this()
@@ -56,7 +56,7 @@ namespace T1B_3Library.Desktop.Forms
             lblDialogTitle.Text = "Editar Livro";
             txtTitle.Text = title;
             txtAuthor.Text = author;
-            cmbCategory.SelectedItem = category;
+            cmbGender.SelectedItem = gender;
             txtYear.Text = year.ToString();
             txtQuantity.Text = quantity.ToString();
         }
@@ -66,22 +66,22 @@ namespace T1B_3Library.Desktop.Forms
         // ============================================================
         private void BookFormDialog_Load(object sender, EventArgs e)
         {
-            LoadCategories();
+            LoadGender();
         }
 
-        private void LoadCategories()
+        private void LoadGender()
         {
-            cmbCategory.Items.Clear();
-            cmbCategory.Items.Add("Romance");
-            cmbCategory.Items.Add("Ficção Científica");
-            cmbCategory.Items.Add("Fantasia");
-            cmbCategory.Items.Add("História");
-            cmbCategory.Items.Add("Biografia");
-            cmbCategory.Items.Add("Tecnologia");
+            cmbGender.Items.Clear();
+            cmbGender.Items.Add("Romance");
+            cmbGender.Items.Add("Ficção Científica");
+            cmbGender.Items.Add("Fantasia");
+            cmbGender.Items.Add("História");
+            cmbGender.Items.Add("Biografia");
+            cmbGender.Items.Add("Tecnologia");
 
-            if (cmbCategory.Items.Count > 0 && cmbCategory.SelectedIndex == -1)
+            if (cmbGender.Items.Count > 0 && cmbGender.SelectedIndex == -1)
             {
-                cmbCategory.SelectedIndex = 0;
+                cmbGender.SelectedIndex = 0;
             }
         }
 
@@ -96,7 +96,7 @@ namespace T1B_3Library.Desktop.Forms
 
             BookTitle = txtTitle.Text.Trim();
             Author = txtAuthor.Text.Trim();
-            Category = cmbCategory.SelectedItem?.ToString() ?? "";
+            Gender = cmbGender.SelectedItem?.ToString() ?? "";
             Year = int.Parse(txtYear.Text.Trim());
             Quantity = int.Parse(txtQuantity.Text.Trim());
 
